@@ -1,0 +1,161 @@
+{
+  // We use ESLint for linting, so every time we save a file, it will be linted
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+  "editor.autoIndent": "full",
+  "editor.insertSpaces": false,
+  "editor.detectIndentation": false,
+
+  // We use Unix line endings to avoid conflicts between Windows and Unix systems
+  "files.eol": "\n",
+  "editor.stickyTabStops": false,
+
+  // Can't turn off extensions recommendations so user is told to install them every time they open the project, this is done to enforce code formatting and linting that is done by these extensions
+  "extensions.ignoreRecommendations": false,
+
+  // After these settings, we have language-specific settings and we also DUPLICATE the same settings as above because user's language-specific settings could override the projects settings
+
+  // We use Prettier for all languages it supports and format the code on save for everyone to have the same code style
+  // We use Eslint for all languages it supports and lint the code on save to see the errors and warnings
+  // Why not multiple language-specific settings ? Because it doesn't override user language-specific settings (https://github.com/microsoft/vscode-docs/issues/5796)
+
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    // We use ESLint for linting, so every time we save a file, it will be linted
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+
+    // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+
+    // We use Unix line endings to avoid conflicts between Windows and Unix systems
+    "files.eol": "\n",
+    "editor.stickyTabStops": false
+  },
+
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    // We use ESLint for linting, so every time we save a file, it will be linted
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+
+    // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+
+    // We use Unix line endings to avoid conflicts between Windows and Unix systems
+    "files.eol": "\n",
+    "editor.stickyTabStops": false
+  },
+
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    // We use ESLint for linting, so every time we save a file, it will be linted
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+
+    // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+
+    // We use Unix line endings to avoid conflicts between Windows and Unix systems
+    "files.eol": "\n",
+    "editor.stickyTabStops": false
+  },
+
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    // We use ESLint for linting, so every time we save a file, it will be linted
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+
+    // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+
+    // We use Unix line endings to avoid conflicts between Windows and Unix systems
+    "files.eol": "\n",
+    "editor.stickyTabStops": false
+  },
+
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+
+    // We use Unix line endings to avoid conflicts between Windows and Unix systems
+    "files.eol": "\n",
+    "editor.stickyTabStops": false
+  },
+
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+
+    // We use Unix line endings to avoid conflicts between Windows and Unix systems
+    "files.eol": "\n",
+    "editor.stickyTabStops": false
+  },
+
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+
+    // We use Unix line endings to avoid conflicts between Windows and Unix systems
+    "files.eol": "\n",
+    "editor.stickyTabStops": false
+  },
+
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    // We use ESLint for linting, so every time we save a file, it will be linted
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+
+    // We use Tabs to indent our code so everyone can choose their own tab size without affecting the project
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+
+    // We use Unix line endings to avoid conflicts between Windows and Unix systems
+    "files.eol": "\n",
+    "editor.stickyTabStops": false
+  },
+}
