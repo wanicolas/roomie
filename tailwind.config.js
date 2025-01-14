@@ -8,7 +8,7 @@ export default {
 				primary: colors.sky,
 			},
 			fontFamily: {
-				sans: ["Inter", ...defaultTheme.fontFamily.sans],
+				sans: ["DMSans", ...defaultTheme.fontFamily.sans],
 			},
 		},
 	},

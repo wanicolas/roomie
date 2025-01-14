@@ -1,15 +1,23 @@
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: local("Inter"), local("inter"), local("Inter-VariableFont_opsz,wght"), url("fonts/Inter.woff2") format("woff2");
+	font-family: "DMSans";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src:
+		local("DMSans"),
+		local("dmsans"),
+		local("DMSans-VariableFont_opsz,wght"),
+		url("fonts/DMSans.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: "Inter";
-  font-style: italic;
-  font-weight: 100 900;
-  font-display: swap;
-  src: local("Inter-Italic"), local("inter-italic"), local("Inter-Italic-VariableFont_opsz,wght"), url("fonts/Inter-Italic.woff2") format("woff2");
+	font-family: "DMSans";
+	font-style: italic;
+	font-weight: 100 900;
+	font-display: swap;
+	src:
+		local("DMSans-Italic"),
+		local("dmsans-italic"),
+		local("DMSans-Italic-VariableFont_opsz,wght"),
+		url("fonts/DMSans-Italic.woff2") format("woff2");
 }
