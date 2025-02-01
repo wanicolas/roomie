@@ -1,7 +1,7 @@
 <template>
 	<Body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
 		<header
-			class="mx-4 mb-28 mt-6 flex items-center justify-between md:mx-12 md:my-8"
+			class="mx-4 mb-20 mt-6 flex max-w-screen-xl items-center justify-between md:mx-12 md:mt-8 xl:mx-auto"
 		>
 			<NuxtLink to="/" class="flex items-center gap-1">
 				<span class="sr-only">Accueil</span>
@@ -12,11 +12,18 @@
 				<span>Roomie</span>
 			</NuxtLink>
 			<nav class="flex items-center gap-6 md:gap-10">
-				<NuxtLink to="/book">Réserver</NuxtLink>
-				<NuxtLink to="/login">Login</NuxtLink>
-				<button @click="toggleColorMode">
+				<NuxtLink to="/book" class="underline-offset-4 hover:underline"
+					>Réserver</NuxtLink
+				>
+				<NuxtLink to="/login" class="underline-offset-4 hover:underline"
+					>Login</NuxtLink
+				>
+				<button
+					class="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+					@click="toggleColorMode"
+				>
 					<svg
-						class="fill-gray-900 dark:fill-white"
+						class="size-5 fill-gray-900 dark:fill-white"
 						xmlns="http://www.w3.org/2000/svg"
 						width="24"
 						height="24"
