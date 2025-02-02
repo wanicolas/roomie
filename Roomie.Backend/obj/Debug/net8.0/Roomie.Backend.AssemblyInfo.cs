@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Roomie.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+870fe5e07f404c927896134cac4ec0a22feea6d9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9d1b822508ac53b5eefd2eff23deb209acd9e587")]
 [assembly: System.Reflection.AssemblyProductAttribute("Roomie.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Roomie.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
