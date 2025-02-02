@@ -56,18 +56,18 @@
   // Stocke la liste des salles
   const rooms = ref([]);
   
-  // Appel API pour récupérer les salles
-  onMounted(async () => {
-	try {
-	  const response = await fetch('http://localhost:5000/api/room'); // Utilise l'URL de ton API
-	  if (!response.ok) {
-		throw new Error('Erreur lors de la récupération des salles');
-	  }
-	  rooms.value = await response.json(); // Enregistre les salles récupérées
-	} catch (error) {
-	  console.error('Erreur:', error);
-	}
-  });
+// Appel API pour récupérer les salles
+onMounted(async () => {
+  try {
+    const response = await fetch('http://localhost:5184/api/Room'); // Modifie l'URL ici
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des salles');
+    }
+    rooms.value = await response.json(); // Enregistre les salles récupérées
+  } catch (error) {
+    console.error('Erreur:', error);
+  }
+});
   
   // Données FAQ (inchangées)
   const faqs = [
