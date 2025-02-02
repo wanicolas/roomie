@@ -1,13 +1,17 @@
 <template>
 	<Body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
 		<header
-			class="mx-4 mb-20 mt-6 flex max-w-screen-xl items-center justify-between md:mx-12 md:mt-8 xl:mx-auto"
+			class="mx-4 mb-20 flex max-w-screen-xl items-center justify-between pt-6 md:mx-12 md:pt-8 xl:mx-auto"
 		>
-			<NuxtLink to="/" class="flex items-center gap-1">
+			<NuxtLink to="/" class="group flex items-center gap-1">
 				<span class="sr-only">Accueil</span>
 				<UIcon
+					name="ph:door"
+					class="size-8 text-primary-700 group-hover:hidden dark:text-primary-300"
+				/>
+				<UIcon
 					name="ph:door-open"
-					class="size-8 text-primary-700 dark:text-primary-300"
+					class="hidden size-8 text-primary-700 group-hover:block dark:text-primary-300"
 				/>
 				<span>Roomie</span>
 			</NuxtLink>
@@ -41,19 +45,29 @@
 		<NuxtPage />
 
 		<footer
-			class="mx-4 my-6 flex items-center justify-between md:mx-12 md:my-8"
+			class="mx-4 my-6 flex max-w-screen-xl items-center justify-between md:mx-12 md:my-8 xl:mx-auto"
 		>
-			<NuxtLink to="/" class="flex items-center gap-1">
+			<NuxtLink to="/" class="group flex items-center gap-1">
 				<span class="sr-only">Accueil</span>
 				<UIcon
+					name="ph:door"
+					class="size-8 text-primary-700 group-hover:hidden dark:text-primary-300"
+				/>
+				<UIcon
 					name="ph:door-open"
-					class="size-8 text-primary-700 dark:text-primary-300"
+					class="hidden size-8 text-primary-700 group-hover:block dark:text-primary-300"
 				/>
 				<span>Roomie</span>
 			</NuxtLink>
 			<nav class="flex items-center gap-6 md:gap-10">
-				<NuxtLink to="/legals">Mentions légales</NuxtLink>
-				<NuxtLink to="https://github.com">Code source</NuxtLink>
+				<NuxtLink to="/legals" class="underline-offset-4 hover:underline"
+					>Mentions légales</NuxtLink
+				>
+				<NuxtLink
+					to="https://github.com/wanicolas/roomie"
+					class="underline-offset-4 hover:underline"
+					>Code source</NuxtLink
+				>
 			</nav>
 		</footer>
 	</Body>

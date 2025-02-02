@@ -18,7 +18,13 @@
 			</UFormGroup>
 
 			<details class="space-y-3">
-				<summary>Plus de filtres</summary>
+				<summary
+					class="ml-auto flex w-fit list-none items-center gap-2 rounded-md bg-gray-200 px-2 py-1 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+					a
+				>
+					Plus de filtres
+					<UIcon name="ph:caret-down" class="size-5" />
+				</summary>
 				<UFormGroup label="Capacité en nombre de personnes">
 					<UInput type="number" min="0" icon="ph:users-three" />
 				</UFormGroup>
