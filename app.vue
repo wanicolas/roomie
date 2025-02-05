@@ -1,20 +1,15 @@
 <template>
 	<Body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
-		<header
-			class="mx-4 mb-20 flex max-w-screen-xl items-center justify-between pt-6 md:mx-12 md:pt-8 xl:mx-auto"
+		<NuxtLink
+			to="#content"
+			class="fixed -top-10 left-4 rounded-md bg-gray-900 px-2 py-1 text-white shadow-md focus:top-4 dark:bg-white dark:text-gray-900"
 		>
-			<NuxtLink to="/" class="group flex items-center gap-1">
-				<span class="sr-only">Accueil</span>
-				<UIcon
-					name="ph:door"
-					class="size-8 text-primary-700 group-hover:hidden dark:text-primary-300"
-				/>
-				<UIcon
-					name="ph:door-open"
-					class="hidden size-8 text-primary-700 group-hover:block dark:text-primary-300"
-				/>
-				<span>Roomie</span>
-			</NuxtLink>
+			Aller au contenu
+		</NuxtLink>
+		<header
+			class="mx-4 mb-20 flex w-full max-w-screen-xl items-center justify-between pt-6 md:mx-12 md:mb-32 md:pt-8 lg:mb-40 xl:mx-auto"
+		>
+			<Logo />
 			<nav class="flex items-center gap-6 md:gap-10">
 				<NuxtLink to="/book" class="underline-offset-4 hover:underline"
 					>Réserver</NuxtLink
@@ -42,32 +37,24 @@
 			</nav>
 		</header>
 
-		<NuxtPage />
+		<div id="content" class="grow">
+			<NuxtPage />
+		</div>
 
 		<footer
-			class="mx-4 my-6 flex max-w-screen-xl items-center justify-between md:mx-12 md:my-8 xl:mx-auto"
+			class="mx-4 my-6 flex w-full max-w-screen-xl items-center justify-between md:mx-12 md:my-8 xl:mx-auto"
 		>
-			<NuxtLink to="/" class="group flex items-center gap-1">
-				<span class="sr-only">Accueil</span>
-				<UIcon
-					name="ph:door"
-					class="size-8 text-primary-700 group-hover:hidden dark:text-primary-300"
-				/>
-				<UIcon
-					name="ph:door-open"
-					class="hidden size-8 text-primary-700 group-hover:block dark:text-primary-300"
-				/>
-				<span>Roomie</span>
-			</NuxtLink>
+			<Logo />
 			<nav class="flex items-center gap-6 md:gap-10">
-				<NuxtLink to="/legals" class="underline-offset-4 hover:underline"
-					>Mentions légales</NuxtLink
-				>
+				<NuxtLink to="/legals" class="underline-offset-4 hover:underline">
+					Mentions légales
+				</NuxtLink>
 				<NuxtLink
 					to="https://github.com/wanicolas/roomie"
 					class="underline-offset-4 hover:underline"
-					>Code source</NuxtLink
 				>
+					Code source
+				</NuxtLink>
 			</nav>
 		</footer>
 	</Body>

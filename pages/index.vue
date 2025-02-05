@@ -1,39 +1,35 @@
 <template>
 	<div class="mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
-		<h1
-			class="mb-8 text-4xl font-semibold text-primary-700 dark:text-primary-300"
-		>
-			Roomie, optimisez la gestion de réservation de vos salles
+		<h1 class="mb-8 text-center text-3xl font-semibold md:text-7xl">
+			Optimisez la gestion <br />
+			de réservation de vos salles
 		</h1>
-		<p class="mb-10 text-xl font-medium text-gray-600 dark:text-gray-300">
+		<p
+			class="mb-10 text-center text-xl font-medium text-gray-600 dark:text-gray-300"
+		>
 			Votre entreprise possède de nombreuses salles ? En choisir une, s'assurer
 			qu'elle soit libre est long et pénible ?
 			<br />
 			Ne cherchez plus, Roomie est là pour vous !
 		</p>
-
-		<!-- Liste des salles -->
-		<div v-if="rooms.length > 0" class="mb-12">
-			<h2 class="text-2xl font-semibold">Nos salles disponibles :</h2>
-			<ul>
-				<li v-for="room in rooms" :key="room.id" class="py-4">
-					<strong>{{ room.name }}</strong> - {{ room.capacity }} personnes
-				</li>
-			</ul>
-		</div>
-		<!-- Alerte si aucune salle n'est disponible -->
-		<div v-else class="mb-12 text-red-500">
-			Aucune salle disponible pour le moment.
+		<div class="flex items-center justify-center gap-3">
+			<UButton to="/book">C'est parti</UButton>
+			<NuxtLink to="#faq" class="group flex items-center gap-1.5">
+				En savoir plus
+				<UIcon
+					name="ph:arrow-right"
+					class="size-4 transition-all group-hover:translate-x-1"
+				/>
+			</NuxtLink>
 		</div>
 
-		<div class="md:mx-auto md:max-w-screen-md">
-			<!-- Le reste de la page reste inchangé -->
-			<div class="my-20 text-center">
-				<h2 class="mb-4 text-2xl font-semibold">
+		<div class="mt-32 md:mx-auto md:max-w-screen-md">
+			<div class="mb-20 text-center">
+				<h2 class="mb-4 text-2xl font-semibold md:text-4xl">
 					Boostez votre productivité. <br />
 					Utilisez Roomie.
 				</h2>
-				<p class="text-gray-600 dark:text-gray-300">
+				<p class="text-gray-600 md:text-lg dark:text-gray-300">
 					Ne perdez pas de temps à chercher une salle, à changer d'étage ou de
 					bâtiment. Oubliez le temps où, une fois arrivé devant la salle, vous
 					vous rendez compte qu'elle est déjà occupée. Soyez plus rapides.
@@ -48,8 +44,6 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-
 useHead({
 	title: "Mentions légales - Roomie, gestion et réservation de salles",
 	meta: [
@@ -61,23 +55,7 @@ useHead({
 	],
 });
 
-// Stocke la liste des salles
-const rooms = ref([]);
-
-// Appel API pour récupérer les salles
-onMounted(async () => {
-	try {
-		const response = await fetch("http://localhost:5184/api/Room"); // Modifie l'URL ici
-		if (!response.ok) {
-			throw new Error("Erreur lors de la récupération des salles");
-		}
-		rooms.value = await response.json(); // Enregistre les salles récupérées
-	} catch (error) {
-		console.error("Erreur:", error);
-	}
-});
-
-// Données FAQ (inchangées)
+// Données FAQ
 const faqs = [
 	{
 		label: "Comment réserver une salle ?",

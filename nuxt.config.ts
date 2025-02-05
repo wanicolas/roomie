@@ -4,4 +4,14 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	modules: ["@nuxt/ui"],
 	css: ["~/assets/fonts.css"],
+	app: {
+		rootAttrs: {
+			class: "min-h-dvh flex flex-col",
+		},
+	},
+	tailwindcss: {
+		config: {
+			content: ["nuxt.config.ts"],
+		},
+	},
 });
