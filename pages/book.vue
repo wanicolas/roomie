@@ -49,19 +49,24 @@
 	</div>
 
 	<div class="bg-gray-100 px-3 py-20 dark:bg-gray-800">
+		<div v-if="pending" class="flex items-center justify-center gap-2">
+			<UIcon name="ph:circle-notch" class="size-12 animate-spin" />
+			<p>Salles en cours de chargement</p>
+		</div>
 		<div
+			v-else-if="rooms"
 			class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
 		>
 			<NuxtLink
 				to="/room"
-				v-for="i in 10"
-				:key="i"
+				v-for="room in rooms"
+				:key="room.id"
 				class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
 			>
 				<img class="h-60 w-full object-cover" src="/room.webp" alt="" />
 				<div class="flex items-baseline justify-between p-3">
 					<div>
-						<div class="text-xl font-medium">Nom de la salle</div>
+						<div class="text-xl font-medium">{{ room.name }}</div>
 						<div class="flex items-center gap-1.5">
 							<UIcon name="ph:stairs" class="size-5" />
 							<div class="text-gray-600 dark:text-gray-300">
@@ -72,11 +77,19 @@
 					<div
 						class="flex items-center gap-1.5 text-gray-700 dark:text-gray-200"
 					>
-						5
+						{{ room.capacity }}
 						<UIcon name="ph:users-three" class="size-5" />
 					</div>
 				</div>
 			</NuxtLink>
 		</div>
+		<div v-else>
+			<p class="text-center text-gray-600 dark:text-gray-300">Aucune salle.</p>
+		</div>
 	</div>
 </template>
+<script setup>
+const { pending, data: rooms } = await useFetch(
+	"http://localhost:5184/api/Room",
+);
+</script>
