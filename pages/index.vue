@@ -38,7 +38,7 @@
 			<h2 id="faq" class="mb-10 text-4xl font-semibold">
 				Questions fréquentes
 			</h2>
-			<UAccordion color="gray" variant="soft" size="sm" :items="faqs" />
+			<UAccordion color="gray" variant="solid" size="lg" :items="faqs" />
 		</div>
 	</div>
 </template>
