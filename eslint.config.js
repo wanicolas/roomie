@@ -4,6 +4,7 @@ import tseslint from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
 // We import the eslint-config-prettier package to disable all ESLint rules that are unnecessary or might conflict with Prettier.
 import eslintConfigPrettier from "eslint-config-prettier";
+// We import the createConfigForNuxt function from the @nuxt/eslint-config package to use the recommended ESLint configuration for Nuxt.js.
 
 export default [
 	{ languageOptions: { globals: globals.browser } },
@@ -28,4 +29,6 @@ export default [
 	},
 	// Use the eslint-config-prettier
 	eslintConfigPrettier,
+	// Use the recommended ESLint configuration for Nuxt.js
+	createConfigForNuxt,
 ];
