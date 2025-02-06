@@ -10,9 +10,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configuration CORS pour Nuxt.js (Front)
+var corsPolicyName = "AllowNuxt";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowNuxt", policy =>
+    options.AddPolicy(corsPolicyName, policy =>
     {
         policy.WithOrigins("http://localhost:3000") // Modifie selon ton URL front
               .AllowAnyMethod()
@@ -38,22 +39,25 @@ using (var scope = app.Services.CreateScope())
     // Ajouter des données de test si la table Rooms est vide
     if (!context.Rooms.Any())
     {
-        context.Rooms.Add(new Room { Name = "Salle A", Capacity = 20, AccessiblePMR = true });
-        context.Rooms.Add(new Room { Name = "Salle B", Capacity = 10, AccessiblePMR = false });
-        context.Rooms.Add(new Room { Name = "Salle C", Capacity = 50, AccessiblePMR = true });
+        context.Rooms.AddRange(new List<Room>
+        {
+            new Room { Name = "Salle A", Capacity = 20, AccessiblePMR = true },
+            new Room { Name = "Salle B", Capacity = 10, AccessiblePMR = false },
+            new Room { Name = "Salle C", Capacity = 50, AccessiblePMR = true }
+        });
         context.SaveChanges();
     }
 }
 
-// Activer Swagger uniquement en mode dev
+// Activer Swagger uniquement en mode développement
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Activer CORS et API
-app.UseCors("AllowNuxt");
+// Activer CORS avant les contrôleurs
+app.UseCors(corsPolicyName);
 app.UseHttpsRedirection();
 app.MapControllers();
 
