@@ -1,6 +1,8 @@
 <template>
 	<div class="mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
-		<h1 class="mb-8 text-4xl font-semibold text-primary-700 dark:text-primary-300">
+		<h1
+			class="mb-8 text-4xl font-semibold text-primary-700 dark:text-primary-300"
+		>
 			{{ room.name }}
 		</h1>
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
@@ -22,20 +24,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-
 const route = useRoute();
-const room = ref({});
 
-// Récupérer l'ID de l'URL et appeler l'API
-onMounted(async () => {
-	try {
-		const response = await fetch(`http://localhost:5184/api/Room/${route.params.id}`);
-		if (!response.ok) throw new Error("Salle non trouvée");
-		room.value = await response.json();
-	} catch (error) {
-		console.error("Erreur:", error);
-	}
-});
+const {
+	data: room,
+	error,
+	status,
+} = await useFetch(`http://localhost:5184/api/Room/${route.params.id}`);
 </script>

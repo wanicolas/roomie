@@ -49,60 +49,51 @@
 	</div>
 
 	<div class="bg-gray-100 px-3 py-20 dark:bg-gray-800">
-		<div v-if="pending" class="flex items-center justify-center gap-2">
+		<div
+			v-if="status === 'pending'"
+			class="flex items-center justify-center gap-2"
+		>
 			<UIcon name="ph:circle-notch" class="size-12 animate-spin" />
 			<p>Salles en cours de chargement</p>
 		</div>
 		<div
-			v-else-if="rooms"
+			v-if="rooms"
 			class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
 		>
-		<NuxtLink :to="`/room/${room.id}`" v-for="room in rooms" :key="room.id">
-	<div class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900">
-		<img class="h-60 w-full object-cover" src="/room.webp" alt="" />
-		<div class="flex items-baseline justify-between p-3">
-			<div>
-				<div class="text-xl font-medium">{{ room.name }}</div>
-				<div class="flex items-center gap-1.5">
-					<UIcon name="ph:stairs" class="size-5" />
-					<div class="text-gray-600 dark:text-gray-300">
-						Étage {{ room.floor }}, {{ room.building }}
+			<NuxtLink :to="`/room/${room.id}`" v-for="room in rooms" :key="room.id">
+				<div
+					class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
+				>
+					<img class="h-60 w-full object-cover" src="/room.webp" alt="" />
+					<div class="flex items-baseline justify-between p-3">
+						<div>
+							<div class="text-xl font-medium">{{ room.name }}</div>
+							<div class="flex items-center gap-1.5">
+								<UIcon name="ph:stairs" class="size-5" />
+								<div class="text-gray-600 dark:text-gray-300">
+									Étage {{ room.floor }}, {{ room.building }}
+								</div>
+							</div>
+						</div>
+						<div
+							class="flex items-center gap-1.5 text-gray-700 dark:text-gray-200"
+						>
+							{{ room.capacity }} <UIcon name="ph:users-three" class="size-5" />
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="flex items-center gap-1.5 text-gray-700 dark:text-gray-200">
-				{{ room.capacity }} <UIcon name="ph:users-three" class="size-5" />
-			</div>
+			</NuxtLink>
 		</div>
-	</div>
-</NuxtLink>
-		</div>
-		<div v-else>
+		<div v-if="error">
 			<p class="text-center text-gray-600 dark:text-gray-300">Aucune salle.</p>
 		</div>
 	</div>
 </template>
+
 <script setup>
-import { ref, onMounted } from 'vue'
-
-const rooms = ref([])
-const pending = ref(true)
-
-const fetchRooms = async () => {
-  try {
-    pending.value = true
-    const response = await fetch("http://localhost:5184/api/Room")
-    if (!response.ok) throw new Error("Erreur lors de la récupération des salles")
-    rooms.value = await response.json()
-    console.log("Salles récupérées:", rooms.value) // <-- Ajoute ce log
-  } catch (error) {
-    console.error("Erreur:", error)
-  } finally {
-    pending.value = false
-  }
-}
-
-
-// Recharger les données lorsque l'utilisateur revient sur la page
-onMounted(fetchRooms)
+const {
+	data: rooms,
+	error,
+	status,
+} = await useFetch("http://localhost:514/api/Room");
 </script>
