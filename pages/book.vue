@@ -95,5 +95,5 @@ const {
 	data: rooms,
 	error,
 	status,
-} = await useFetch("http://localhost:514/api/Room");
+} = await useFetch("http://localhost:5184/api/Room");
 </script>
