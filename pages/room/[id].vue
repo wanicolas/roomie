@@ -1,5 +1,6 @@
 <template>
-	<div class="mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
+	<div v-if="error">{{ error }}</div>
+	<div v-else class="mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
 		<h1
 			class="mb-8 text-4xl font-semibold text-primary-700 dark:text-primary-300"
 		>
@@ -17,9 +18,9 @@
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
 			Accessibilité PMR : {{ room.isAccessible ? "Oui" : "Non" }}
 		</p>
-
-		<!-- Retour vers la liste -->
-		<NuxtLink to="/book" class="text-blue-600 underline">Retour</NuxtLink>
+		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
+			{{ room.description }}
+		</p>
 	</div>
 </template>
 

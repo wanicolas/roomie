@@ -8,12 +8,12 @@
 				<USelect icon="ph:building" />
 			</UFormGroup>
 			<UFormGroup label="Date de disponibilité">
-				<UInput type="date" icon="ph:calendar" />
+				<UInput type="date" icon="ph:calendar" v-model="availabilityDate" />
 			</UFormGroup>
-			<UFormGroup label="Heure de début">
+			<UFormGroup label="Heure de début" v-model="availabilityStartHour">
 				<UInput type="time" icon="ph:clock" />
 			</UFormGroup>
-			<UFormGroup label="Heure de fin">
+			<UFormGroup label="Heure de fin" v-model="availabilityEndHour">
 				<UInput type="time" icon="ph:clock" />
 			</UFormGroup>
 
@@ -27,9 +27,6 @@
 				</summary>
 				<UFormGroup label="Capacité en nombre de personnes">
 					<UInput type="number" min="0" icon="ph:users-three" />
-				</UFormGroup>
-				<UFormGroup label="Surface en m2">
-					<UInput type="number" min="0" icon="ph:resize" />
 				</UFormGroup>
 				<UFormGroup label="Places assises minimum">
 					<UInput type="number" min="0" icon="ph:office-chair" />
@@ -56,8 +53,11 @@
 			<UIcon name="ph:circle-notch" class="size-12 animate-spin" />
 			<p>Salles en cours de chargement</p>
 		</div>
+		<div v-else-if="error">
+			<p class="text-center text-gray-600 dark:text-gray-300">{{ error }}</p>
+		</div>
 		<div
-			v-if="rooms"
+			v-else-if="rooms"
 			class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
 		>
 			<NuxtLink :to="`/room/${room.id}`" v-for="room in rooms" :key="room.id">
@@ -84,9 +84,7 @@
 				</div>
 			</NuxtLink>
 		</div>
-		<div v-if="error">
-			<p class="text-center text-gray-600 dark:text-gray-300">Aucune salle.</p>
-		</div>
+		<div v-else-if="rooms.length === 0">Pas de salles trouvées.</div>
 	</div>
 </template>
 
@@ -96,4 +94,8 @@ const {
 	error,
 	status,
 } = await useFetch("http://localhost:5184/api/Room");
+
+const availabilityDate = ref("");
+const availabilityStartHour = ref("");
+const availabilityEndHour = ref("");
 </script>
