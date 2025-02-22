@@ -3,18 +3,33 @@
 		Réserver une salle
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
-		<UForm class="flex flex-col gap-3">
+		<UForm @submit="onSubmit" class="flex flex-col gap-3">
 			<UFormGroup label="Bâtiment">
-				<USelect icon="ph:building" />
+				<USelect required icon="ph:building" />
 			</UFormGroup>
 			<UFormGroup label="Date de disponibilité">
-				<UInput type="date" icon="ph:calendar" v-model="availabilityDate" />
+				<UInput
+					required
+					type="date"
+					icon="ph:calendar"
+					v-model="availabilityDate"
+				/>
 			</UFormGroup>
 			<UFormGroup label="Heure de début">
-				<UInput type="time" icon="ph:clock" v-model="availabilityStartHour" />
+				<UInput
+					required
+					type="time"
+					icon="ph:clock"
+					v-model="availabilityStartHour"
+				/>
 			</UFormGroup>
 			<UFormGroup label="Heure de fin">
-				<UInput type="time" icon="ph:clock" v-model="availabilityEndHour" />
+				<UInput
+					required
+					type="time"
+					icon="ph:clock"
+					v-model="availabilityEndHour"
+				/>
 			</UFormGroup>
 
 			<details class="space-y-3">
@@ -72,7 +87,11 @@
 			v-else-if="rooms"
 			class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
 		>
-			<NuxtLink :to="`/room/${room.id}`" v-for="room in rooms" :key="room.id">
+			<NuxtLink
+				:to="`/room/${room.id}?date=${availabilityDate}&startHour=${availabilityStartHour}&endHour=${availabilityEndHour}`"
+				v-for="room in rooms"
+				:key="room.id"
+			>
 				<div
 					class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
 				>
@@ -111,12 +130,6 @@ useHead({
 	],
 });
 
-const {
-	data: rooms,
-	error,
-	status,
-} = await useFetch("http://localhost:5184/api/Room");
-
 const availabilityDate = ref("");
 const availabilityStartHour = ref("");
 const availabilityEndHour = ref("");
@@ -125,4 +138,25 @@ const seats = ref("");
 const accessible = ref(false);
 const projector = ref(false);
 const speaker = ref(false);
+
+const onSubmit = async () => {
+	const query = {
+		availabilityDate: availabilityDate.value,
+		availabilityStartHour: availabilityStartHour.value,
+		availabilityEndHour: availabilityEndHour.value,
+		peopleCapacity: peopleCapacity.value,
+		seats: seats.value,
+		accessible: accessible.value,
+		projector: projector.value,
+		speaker: speaker.value,
+	};
+
+	const {
+		data: rooms,
+		error,
+		status,
+	} = await useFetch(
+		`http://localhost:5184/api/Room?${new URLSearchParams(query).toString()}`,
+	);
+};
 </script>

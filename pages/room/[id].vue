@@ -6,6 +6,20 @@
 		>
 			{{ room.name }}
 		</h1>
+
+		<UCarousel
+			v-slot="{ item }"
+			:items="items"
+			:ui="{ item: 'basis-full' }"
+			class="overflow-hidden rounded-lg"
+			arrows
+			indicators
+		>
+			<img :src="item" class="w-full" draggable="false" />
+		</UCarousel>
+
+		<UButton>Réserver cette salle le 03/02/2000 de 02:99 à 03:98</UButton>
+
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
 			Capacité : {{ room.capacity }} personnes
 		</p>
@@ -26,7 +40,7 @@
 
 <script setup>
 useHead({
-	title: "Salle " + room.name + " - Roomie, gestion et réservation de salles",
+	title: "Détails de la salle - Roomie, gestion et réservation de salles",
 	meta: [
 		{
 			name: "description",
@@ -43,4 +57,13 @@ const {
 	error,
 	status,
 } = await useFetch(`http://localhost:5184/api/Room/${route.params.id}`);
+
+const items = [
+	"https://picsum.photos/1920/1080?random=1",
+	"https://picsum.photos/1920/1080?random=2",
+	"https://picsum.photos/1920/1080?random=3",
+	"https://picsum.photos/1920/1080?random=4",
+	"https://picsum.photos/1920/1080?random=5",
+	"https://picsum.photos/1920/1080?random=6",
+];
 </script>
