@@ -33,8 +33,7 @@ useHead({
 	meta: [
 		{
 			name: "description",
-			content:
-				"Roomie est une plateforme de réservation de salles de réunion. Retrouvez ici les mentions légales du site.",
+			content: "Retrouvez ici les mentions légales du site.",
 		},
 	],
 });

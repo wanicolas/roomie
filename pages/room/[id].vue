@@ -25,6 +25,17 @@
 </template>
 
 <script setup>
+useHead({
+	title: "Salle " + room.name + " - Roomie, gestion et réservation de salles",
+	meta: [
+		{
+			name: "description",
+			content:
+				"Vous trouverez les informations et disponibilités de cette salle sur cette page.",
+		},
+	],
+});
+
 const route = useRoute();
 
 const {

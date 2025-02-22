@@ -10,34 +10,46 @@
 			<UFormGroup label="Date de disponibilité">
 				<UInput type="date" icon="ph:calendar" v-model="availabilityDate" />
 			</UFormGroup>
-			<UFormGroup label="Heure de début" v-model="availabilityStartHour">
-				<UInput type="time" icon="ph:clock" />
+			<UFormGroup label="Heure de début">
+				<UInput type="time" icon="ph:clock" v-model="availabilityStartHour" />
 			</UFormGroup>
-			<UFormGroup label="Heure de fin" v-model="availabilityEndHour">
-				<UInput type="time" icon="ph:clock" />
+			<UFormGroup label="Heure de fin">
+				<UInput type="time" icon="ph:clock" v-model="availabilityEndHour" />
 			</UFormGroup>
 
 			<details class="space-y-3">
 				<summary
-					class="ml-auto flex w-fit list-none items-center gap-2 rounded-md bg-gray-200 px-2 py-1 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-					a
+					class="ml-auto flex w-fit list-none items-center gap-2 rounded-md bg-gray-200 px-2 py-1 text-sm text-gray-600 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300"
 				>
 					Plus de filtres
 					<UIcon name="ph:caret-down" class="size-5" />
 				</summary>
 				<UFormGroup label="Capacité en nombre de personnes">
-					<UInput type="number" min="0" icon="ph:users-three" />
+					<UInput
+						type="number"
+						min="0"
+						icon="ph:users-three"
+						v-model="peopleCapacity"
+					/>
 				</UFormGroup>
 				<UFormGroup label="Places assises minimum">
-					<UInput type="number" min="0" icon="ph:office-chair" />
+					<UInput
+						type="number"
+						min="0"
+						icon="ph:office-chair"
+						v-model="seats"
+					/>
 				</UFormGroup>
-				<UCheckbox label="Accessible aux PMR" />
+				<UCheckbox
+					label="Obligatoirement accessible aux PMR"
+					v-model="accessible"
+				/>
 				<fieldset>
 					<legend class="mb-1 text-sm font-medium">
 						Équipements disponibles :
 					</legend>
-					<UCheckbox label="Vidéoprojecteur" />
-					<UCheckbox label="Enceintes" />
+					<UCheckbox label="Vidéoprojecteur" v-model="projector" />
+					<UCheckbox label="Enceintes" v-model="speaker" />
 				</fieldset>
 			</details>
 
@@ -89,6 +101,16 @@
 </template>
 
 <script setup>
+useHead({
+	title: "Réserver une salle - Roomie, gestion et réservation de salles",
+	meta: [
+		{
+			name: "description",
+			content: "Réservez une salle et trouvez des disponibilités.",
+		},
+	],
+});
+
 const {
 	data: rooms,
 	error,
@@ -98,4 +120,9 @@ const {
 const availabilityDate = ref("");
 const availabilityStartHour = ref("");
 const availabilityEndHour = ref("");
+const peopleCapacity = ref("");
+const seats = ref("");
+const accessible = ref(false);
+const projector = ref(false);
+const speaker = ref(false);
 </script>

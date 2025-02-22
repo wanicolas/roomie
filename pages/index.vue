@@ -35,6 +35,7 @@
 					vous rendez compte qu'elle est déjà occupée. Soyez plus rapides.
 				</p>
 			</div>
+
 			<h2 id="faq" class="mb-10 text-4xl font-semibold">
 				Questions fréquentes
 			</h2>
@@ -45,12 +46,12 @@
 
 <script setup>
 useHead({
-	title: "Mentions légales - Roomie, gestion et réservation de salles",
+	title: "Roomie - Application de gestion de réservation de salles de réunion",
 	meta: [
 		{
 			name: "description",
 			content:
-				"Roomie est une plateforme de réservation de salles de réunion. Retrouvez ici les mentions légales du site.",
+				"Roomie est une plateforme de gestion de réservation de salles de réunion. Votre entreprise possède plusieurs salles et vous souhaitez simplifier et optimiser leur réservation pour les réunions ? N'hésitez-pas !.",
 		},
 	],
 });
@@ -60,7 +61,7 @@ const faqs = [
 	{
 		label: "Comment réserver une salle ?",
 		content:
-			"Pour réserver une salle, il vous suffit de vous rendre sur la page de réservation et de choisir la salle que vous souhaitez réserver. Vous pourrez ensuite choisir la date et l'heure de début et de fin de votre réservation.",
+			"Pour réserver une salle, il vous suffit de vous rendre sur la page de réservation et de choisir la salle que vous souhaitez réserver. Vous pourrez ensuite choisir la date, l'heure de début et de fin de votre réservation.",
 	},
 	{
 		label: "Comment annuler une réservation ?",
@@ -71,6 +72,11 @@ const faqs = [
 		label: "Peut-on filtrer les salles par capacité ?",
 		content:
 			"Oui, vous pouvez filtrer les salles par capacité. Pour cela, il vous suffit de vous rendre sur la page de réservation et de choisir la capacité minimale que vous souhaitez. D'autres filtres sont également disponibles.",
+	},
+	{
+		label: "Comment savoir si une salle est libre ?",
+		content:
+			"Dans la recherche des salles, vous pouvez indiquer une date, une heure de début et une heure de fin. Les salles disponibles s'afficheront alors en fonction de ces critères. Vous pouvez également vérifier sur la fiche de la salle si elle est libre à la date et aux heures souhaitées.",
 	},
 ];
 </script>

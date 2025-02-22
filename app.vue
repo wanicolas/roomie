@@ -4,19 +4,19 @@
 			to="#content"
 			class="fixed -top-10 left-4 rounded-md bg-gray-900 px-2 py-1 text-white shadow-md focus:top-4 dark:bg-white dark:text-gray-900"
 		>
-			Aller au contenu
+			Aller au contenu principal
 		</NuxtLink>
 		<header
-			class="mx-4 mb-20 flex w-full max-w-screen-xl items-center justify-between pt-6 md:mx-12 md:mb-32 md:pt-8 lg:mb-40 xl:mx-auto"
+			class="mb-20 flex w-full max-w-screen-xl items-center justify-between px-4 pt-6 md:mb-32 md:px-12 md:pt-8 lg:mb-40 xl:mx-auto"
 		>
 			<Logo />
 			<nav class="flex items-center gap-6 md:gap-10">
-				<NuxtLink to="/book" class="underline-offset-4 hover:underline"
-					>Réserver</NuxtLink
-				>
-				<NuxtLink to="/login" class="underline-offset-4 hover:underline"
-					>Login</NuxtLink
-				>
+				<NuxtLink to="/book" class="underline-offset-4 hover:underline">
+					Réserver
+				</NuxtLink>
+				<NuxtLink to="/login" class="underline-offset-4 hover:underline">
+					Connexion/Inscription
+				</NuxtLink>
 				<button
 					class="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
 					@click="toggleColorMode"
@@ -37,9 +37,9 @@
 			</nav>
 		</header>
 
-		<div id="content" class="grow">
+		<main id="content" class="grow">
 			<NuxtPage />
-		</div>
+		</main>
 
 		<footer
 			class="mx-4 my-6 flex w-full max-w-screen-xl items-center justify-between md:mx-12 md:my-8 xl:mx-auto"
