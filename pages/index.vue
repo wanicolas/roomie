@@ -76,7 +76,7 @@ const faqs = [
 	{
 		label: "Comment savoir si une salle est libre ?",
 		content:
-			"Dans la recherche des salles, vous pouvez indiquer une date, une heure de début et une heure de fin. Les salles disponibles s'afficheront alors en fonction de ces critères. Vous pouvez également vérifier sur la fiche de la salle si elle est libre à la date et aux heures souhaitées.",
+			"Dans la recherche des salles, vous devez indiquer une date, une heure de début et une heure de fin. Les salles disponibles s'afficheront alors en fonction de ces critères.",
 	},
 ];
 </script>
