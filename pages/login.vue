@@ -25,3 +25,15 @@
 		</p>
 	</div>
 </template>
+
+<script setup>
+useHead({
+	title: "Connexion - Roomie, gestion et réservation de salles",
+	meta: [
+		{
+			name: "description",
+			content: "Connexion à votre compte Roomie.",
+		},
+	],
+});
+</script>
