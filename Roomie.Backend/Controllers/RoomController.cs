@@ -1,32 +1,27 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Roomie.Backend.Data;
 using Roomie.Backend.Models;
-using Microsoft.EntityFrameworkCore;
-
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Roomie.Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/room")]
     [ApiController]
     public class RoomController : ControllerBase
     {
-        private readonly AppDbContext _context;  // Utiliser AppDbContext
+        private readonly AppDbContext _context;
 
-        public RoomController(AppDbContext context)  // Utiliser AppDbContext
+        public RoomController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
+        public ActionResult<IEnumerable<Room>> GetRooms()
         {
-            var rooms = await _context.Rooms.ToListAsync();
-            if (rooms == null || !rooms.Any())
-            {
-                return NotFound("Aucune salle disponible.");
-            }
-
-            return Ok(rooms);
+            return Ok(_context.Rooms.ToList());
         }
     }
 }
