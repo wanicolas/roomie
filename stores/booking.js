@@ -5,12 +5,6 @@ import { defineStore } from "pinia";
 // and `Store` (e.g. `useUserStore`, `useCartStore`, `useProductStore`)
 // the first argument is a unique id of the store across your application
 export const useBookingStore = defineStore("booking", {
-	state: () => ({
-		availabilityDate: "",
-		availabilityStartHour: "",
-		availabilityEndHour: "",
-	}),
-	actions: {
-		// since we rely on `this`, we cannot use an arrow function
-	},
+	state: () => ({}),
+	actions: {},
 });
