@@ -1,9 +1,7 @@
 <template>
 	<div v-if="error">{{ error }}</div>
 	<div v-else class="mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
-		<h1
-			class="mb-8 text-4xl font-semibold text-primary-700 dark:text-primary-300"
-		>
+		<h1 class="mb-8 text-4xl font-semibold text-primary-700 dark:text-primary-300">
 			{{ room.name }}
 		</h1>
 
@@ -18,8 +16,14 @@
 			<img :src="item" class="w-full" draggable="false" />
 		</UCarousel>
 
-		<!-- Bouton de réservation visible pour les utilisateurs normaux -->
-		<UButton v-if="!isAdmin" @click="reserveRoom">Réserver cette salle</UButton>
+		<!-- Formulaire de réservation pour les utilisateurs -->
+		<div v-if="!isAdmin" class="mt-6 p-4 border rounded-lg bg-gray-100 dark:bg-gray-800">
+			<h2 class="text-xl font-semibold mb-4">Réserver cette salle</h2>
+			<UInput v-model="startTime" type="datetime-local" label="Heure de début" />
+			<UInput v-model="endTime" type="datetime-local" label="Heure de fin" class="mt-2" />
+			<UButton @click="reserveRoom" class="mt-4">Réserver</UButton>
+			<p v-if="reservationMessage" class="mt-2 text-green-600">{{ reservationMessage }}</p>
+		</div>
 
 		<!-- Boutons pour l'admin -->
 		<div v-if="isAdmin" class="mt-4 flex gap-2">
@@ -60,6 +64,9 @@ useHead({
 const route = useRoute();
 const token = process.client ? localStorage.getItem("token") : null;
 const isAdmin = process.client ? localStorage.getItem("role") === "Admin" : false;
+const startTime = ref("");
+const endTime = ref("");
+const reservationMessage = ref("");
 
 const {
 	data: room,
@@ -76,8 +83,30 @@ const items = [
 	"https://picsum.photos/1920/1080?random=6",
 ];
 
-const reserveRoom = () => {
-	alert("Réservation en cours... (à implémenter)");
+const reserveRoom = async () => {
+	if (!startTime.value || !endTime.value) {
+		reservationMessage.value = "Veuillez choisir une date et une heure.";
+		return;
+	}
+
+	const response = await fetch("http://localhost:5184/api/Reservation", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			roomId: route.params.id,
+			startTime: startTime.value,
+			endTime: endTime.value,
+		}),
+	});
+
+	if (response.ok) {
+		reservationMessage.value = "Réservation réussie ! ✅";
+	} else {
+		reservationMessage.value = "Erreur lors de la réservation ❌";
+	}
 };
 
 const editRoom = () => {

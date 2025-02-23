@@ -1,30 +1,27 @@
+import { defineNuxtPlugin } from '#app'
+import { useAuthStore } from '@/store/auth'
+import { onMounted } from 'vue'
+
 export default defineNuxtPlugin(() => {
-    if (process.client) {
-      const token = localStorage.getItem("token");
-      const role = localStorage.getItem("role"); // ✅ Récupérer le rôle
-  
-      if (token) {
-        const originalFetch = window.fetch;
-  
+  if (process.client) {
+    onMounted(() => {
+      const authStore = useAuthStore()
+
+      // Vérifie l'authentification au chargement
+      authStore.checkAuth()
+
+      if (authStore.isLoggedIn) {
+        const originalFetch = window.fetch
+
         window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-          init = init || {}; // S'assurer que `init` est défini
+          init = init || {}
           init.headers = {
             ...init.headers,
-            Authorization: `Bearer ${token}`,
-          };
-          return originalFetch(input, init);
-        };
+            Authorization: `Bearer ${authStore.token}`
+          }
+          return originalFetch(input, init)
+        }
       }
-  
-      return {
-        provide: {
-          auth: {
-            token,
-            role, // ✅ Fournir le rôle globalement
-            isAdmin: role === "Admin", // ✅ Vérifier si admin
-          },
-        },
-      };
-    }
-  });
-  
+    })
+  }
+})

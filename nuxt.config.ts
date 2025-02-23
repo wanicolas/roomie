@@ -11,7 +11,15 @@ export default defineNuxtConfig({
     },
     tailwindcss: {
         config: {
-            content: ["nuxt.config.ts"],
+            content: [
+                "./components/**/*.{vue,js,ts}", 
+                "./layouts/**/*.vue", 
+                "./pages/**/*.vue", 
+                "./plugins/**/*.{js,ts}", 
+                "./store/**/*.{js,ts}", 
+                "./app.vue"
+            ],
         },
     },
+    
 });

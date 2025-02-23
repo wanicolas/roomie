@@ -1,21 +1,40 @@
+<template>
+	<h1 class="mb-6 text-center text-2xl font-semibold md:mb-12 md:text-4xl">
+		Connexion
+	</h1>
+	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
+		<UForm @submit.prevent="login(email, password)" class="flex flex-col gap-3">
+			<UFormGroup label="Email">
+				<UInput v-model="email" icon="ph:envelope" type="email" required />
+			</UFormGroup>
+			<UFormGroup label="Mot de passe">
+				<UInput v-model="password" icon="ph:lock" type="password" required />
+			</UFormGroup>
+
+			<UButton type="submit" block>Se connecter</UButton>
+
+			<p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
+		</UForm>
+		<!-- ✅ Ajout du bouton d'inscription -->
+		<div class="mt-4 text-center">
+			<p class="text-gray-600">Vous n'avez pas de compte ?</p>
+			<UButton color="gray" variant="link" @click="router.push('/register')">
+				Créer un compte
+			</UButton>
+		</div>
+	</div>
+</template>
+
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/store/auth'
 
 const email = ref('')
 const password = ref('')
 const errorMessage = ref(null)
 const router = useRouter()
-
-const isLoggedIn = ref(false);
-
-// Vérifie si l'utilisateur est connecté au chargement de la page
-onMounted(() => {
-  if (process.client) { // Vérifie si l'on est côté client
-    const token = localStorage.getItem('token');
-    isLoggedIn.value = !!token; // Si un token est présent, l'utilisateur est connecté
-  }
-});
+const authStore = useAuthStore()
 
 const login = async () => {
   errorMessage.value = ""
@@ -36,29 +55,14 @@ const login = async () => {
     }
 
     const data = await response.json()
-    if (process.client) {
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("role", data.role) // ✅ Stocker le rôle
-    }
 
-    // Mise à jour de l'état de connexion
-    isLoggedIn.value = true;
+    // ✅ Mettre à jour Pinia immédiatement
+    authStore.login(data.token, data.role)
 
-    router.push("/") // Rediriger vers la page d'accueil après connexion
+    router.push("/") // Rediriger vers la page d'accueil
   } catch (error) {
     errorMessage.value = error.message
   }
 }
-
-const logout = () => {
-  if (process.client) {
-    localStorage.removeItem("token")
-    localStorage.removeItem("role")
-  }
-
-  // Mise à jour de l'état de connexion
-  isLoggedIn.value = false;
-
-  router.push("/login") // Rediriger vers la page de connexion après déconnexion
-}
 </script>
+

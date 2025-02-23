@@ -1,38 +1,28 @@
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
 export function useAuth() {
-  const token = ref<string | null>(process.client ? localStorage.getItem('token') : null)
-  const router = useRouter()
-  const errorMessage = ref<string | null>(null)
-
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await fetch('http://localhost:5184/api/Auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
+  async function login(email: string, password: string) {
+      const response = await fetch("http://localhost:5184/api/Account/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+      });
 
       if (!response.ok) {
-        throw new Error('Erreur de connexion')
+          console.error("Erreur de connexion");
+          return null;
       }
 
-      const data = await response.json()
-      token.value = data.token
-      localStorage.setItem('token', data.token)
-
-      router.push('/')
-    } catch (error) {
-      errorMessage.value = 'Email ou mot de passe incorrect'
-    }
+      const data = await response.json();
+      localStorage.setItem("token", data.Token); // Stocker le token
+      return data.Token;
   }
 
-  const logout = () => {
-    token.value = null
-    localStorage.removeItem('token')
-    router.push('/login')
+  function logout() {
+      localStorage.removeItem("token"); // Supprimer le token
   }
 
-  return { token, login, logout, errorMessage }
+  function getToken() {
+      return localStorage.getItem("token");
+  }
+
+  return { login, logout, getToken };
 }
