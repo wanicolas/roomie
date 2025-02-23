@@ -47,6 +47,7 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthorization();
 
+
 // Configuration CORS pour Nuxt.js
 var corsPolicyName = "AllowNuxt";
 builder.Services.AddCors(options =>
@@ -61,6 +62,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Initialiser la BDD avec un admin si besoin
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await DbInitializer.Initialize(services);
+}
 // Activer Swagger uniquement en mode développement
 if (app.Environment.IsDevelopment())
 {
