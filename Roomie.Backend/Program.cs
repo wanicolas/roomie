@@ -1,53 +1,65 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Roomie.Backend.Data;
 using Roomie.Backend.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Ajouter les services
+// Ajouter les services MVC
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configuration CORS pour Nuxt.js (Front)
+// Ajouter la connexion SQLite
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=roomie.db"));
+
+// Ajouter Identity pour la gestion des utilisateurs
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+// Configuration de JWT
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        ClockSkew = TimeSpan.Zero
+    };
+});
+builder.Services.AddAuthorization();
+
+// Configuration CORS pour Nuxt.js
 var corsPolicyName = "AllowNuxt";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(corsPolicyName, policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // Modifie selon ton URL front
+        policy.WithOrigins("http://localhost:3000") // Mets l'URL de ton front
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
 });
 
-// Ajouter la connexion à la base de données SQLite
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=roomie.db"));
-
 var app = builder.Build();
-
-// Vérifier la base de données et ajouter des données de test si nécessaire
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<AppDbContext>();
-
-    // Vérifier si la base de données est déjà créée
-    context.Database.EnsureCreated();
-
-    // Ajouter des données de test si la table Rooms est vide
-    if (!context.Rooms.Any())
-    {
-        context.Rooms.AddRange(new List<Room>
-        {
-            new Room { Name = "Salle A", Capacity = 20, AccessiblePMR = true },
-            new Room { Name = "Salle B", Capacity = 10, AccessiblePMR = false },
-            new Room { Name = "Salle C", Capacity = 50, AccessiblePMR = true }
-        });
-        context.SaveChanges();
-    }
-}
 
 // Activer Swagger uniquement en mode développement
 if (app.Environment.IsDevelopment())
@@ -56,9 +68,38 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Activer CORS avant les contrôleurs
+// Initialiser la base de données et ajouter des données de test
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+    RoomSeeder.Seed(context);
+    // Création automatique des rôles
+    await CreateRoles(services);
+}
+
+// Middleware
 app.UseCors(corsPolicyName);
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Méthode pour créer les rôles si ils n'existent pas
+async Task CreateRoles(IServiceProvider serviceProvider)
+{
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    string[] roleNames = { "User", "Admin" };
+
+    foreach (var roleName in roleNames)
+    {
+        var roleExists = await roleManager.RoleExistsAsync(roleName);
+        if (!roleExists)
+        {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+}

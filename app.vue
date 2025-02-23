@@ -11,12 +11,18 @@
 		>
 			<Logo />
 			<nav class="flex items-center gap-6 md:gap-10">
-				<NuxtLink to="/book" class="underline-offset-4 hover:underline"
-					>Réserver</NuxtLink
-				>
-				<NuxtLink to="/login" class="underline-offset-4 hover:underline"
-					>Login</NuxtLink
-				>
+			<!-- Bouton de déconnexion visible uniquement si connecté -->
+			<button v-if="isAuthenticated" @click="logout" class="text-red-400">Se déconnecter</button>
+
+				<!-- Bouton "Réserver" toujours visible -->
+				<NuxtLink to="/book" class="underline-offset-4 hover:underline">
+					Réserver
+				</NuxtLink>
+
+				<!-- Bouton "Login" caché si connecté -->
+				<NuxtLink v-if="!isAuthenticated" to="/login" class="underline-offset-4 hover:underline">
+					Login
+				</NuxtLink>
 				<button
 					class="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
 					@click="toggleColorMode"
@@ -61,12 +67,31 @@
 </template>
 
 <script setup>
-const colorMode = useColorMode();
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+const token = useState('token', () => null) // Crée un state global pour le token
+
+// Vérifie si un token est présent au chargement
+onMounted(() => {
+  token.value = localStorage.getItem('token') || null
+})
+
+const isAuthenticated = computed(() => !!token.value) // Permet d'afficher dynamiquement les boutons
+
+const logout = () => {
+  localStorage.removeItem('token')
+  token.value = null // Met à jour immédiatement pour cacher le bouton
+  router.push('/login')
+}
+
+const colorMode = useColorMode();
 const toggleColorMode = () => {
 	colorMode.preference = colorMode.preference === "light" ? "dark" : "light";
 };
 </script>
+
 
 <style>
 /* Transition between pages */

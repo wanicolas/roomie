@@ -28,5 +28,18 @@ namespace Roomie.Backend.Controllers
 
             return Ok(rooms);
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Room>> GetRoom(int id)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+            
+            if (room == null)
+            {
+                return NotFound($"Aucune salle trouvée avec l'ID {id}.");
+            }
+
+            return Ok(room);
+        }
+
     }
 }
