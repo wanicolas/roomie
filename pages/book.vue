@@ -3,41 +3,68 @@
 		Réserver une salle
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
-		<UForm class="flex flex-col gap-3">
+		<UForm @submit="onSubmit" class="flex flex-col gap-3">
 			<UFormGroup label="Bâtiment">
-				<USelect icon="ph:building" />
+				<USelect required icon="ph:building" />
 			</UFormGroup>
 			<UFormGroup label="Date de disponibilité">
-				<UInput type="date" icon="ph:calendar" v-model="availabilityDate" />
+				<UInput
+					required
+					type="date"
+					icon="ph:calendar"
+					v-model="availabilityDate"
+				/>
 			</UFormGroup>
-			<UFormGroup label="Heure de début" v-model="availabilityStartHour">
-				<UInput type="time" icon="ph:clock" />
+			<UFormGroup label="Heure de début">
+				<UInput
+					required
+					type="time"
+					icon="ph:clock"
+					v-model="availabilityStartHour"
+				/>
 			</UFormGroup>
-			<UFormGroup label="Heure de fin" v-model="availabilityEndHour">
-				<UInput type="time" icon="ph:clock" />
+			<UFormGroup label="Heure de fin">
+				<UInput
+					required
+					type="time"
+					icon="ph:clock"
+					v-model="availabilityEndHour"
+				/>
 			</UFormGroup>
 
 			<details class="space-y-3">
 				<summary
-					class="ml-auto flex w-fit list-none items-center gap-2 rounded-md bg-gray-200 px-2 py-1 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-					a
+					class="ml-auto flex w-fit list-none items-center gap-2 rounded-md bg-gray-200 px-2 py-1 text-sm text-gray-600 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300"
 				>
 					Plus de filtres
 					<UIcon name="ph:caret-down" class="size-5" />
 				</summary>
 				<UFormGroup label="Capacité en nombre de personnes">
-					<UInput type="number" min="0" icon="ph:users-three" />
+					<UInput
+						type="number"
+						min="0"
+						icon="ph:users-three"
+						v-model="peopleCapacity"
+					/>
 				</UFormGroup>
 				<UFormGroup label="Places assises minimum">
-					<UInput type="number" min="0" icon="ph:office-chair" />
+					<UInput
+						type="number"
+						min="0"
+						icon="ph:office-chair"
+						v-model="seats"
+					/>
 				</UFormGroup>
-				<UCheckbox label="Accessible aux PMR" />
+				<UCheckbox
+					label="Obligatoirement accessible aux PMR"
+					v-model="accessible"
+				/>
 				<fieldset>
 					<legend class="mb-1 text-sm font-medium">
 						Équipements disponibles :
 					</legend>
-					<UCheckbox label="Vidéoprojecteur" />
-					<UCheckbox label="Enceintes" />
+					<UCheckbox label="Vidéoprojecteur" v-model="projector" />
+					<UCheckbox label="Enceintes" v-model="speaker" />
 				</fieldset>
 			</details>
 
@@ -60,7 +87,11 @@
 			v-else-if="rooms"
 			class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
 		>
-			<NuxtLink :to="`/room/${room.id}`" v-for="room in rooms" :key="room.id">
+			<NuxtLink
+				:to="`/room/${room.id}?date=${availabilityDate}&startHour=${availabilityStartHour}&endHour=${availabilityEndHour}`"
+				v-for="room in rooms"
+				:key="room.id"
+			>
 				<div
 					class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
 				>
@@ -89,13 +120,43 @@
 </template>
 
 <script setup>
-const {
-	data: rooms,
-	error,
-	status,
-} = await useFetch("http://localhost:5184/api/Room");
+useHead({
+	title: "Réserver une salle - Roomie, gestion et réservation de salles",
+	meta: [
+		{
+			name: "description",
+			content: "Réservez une salle et trouvez des disponibilités.",
+		},
+	],
+});
 
 const availabilityDate = ref("");
 const availabilityStartHour = ref("");
 const availabilityEndHour = ref("");
+const peopleCapacity = ref("");
+const seats = ref("");
+const accessible = ref(false);
+const projector = ref(false);
+const speaker = ref(false);
+
+const onSubmit = async () => {
+	const query = {
+		availabilityDate: availabilityDate.value,
+		availabilityStartHour: availabilityStartHour.value,
+		availabilityEndHour: availabilityEndHour.value,
+		peopleCapacity: peopleCapacity.value,
+		seats: seats.value,
+		accessible: accessible.value,
+		projector: projector.value,
+		speaker: speaker.value,
+	};
+
+	const {
+		data: rooms,
+		error,
+		status,
+	} = await useFetch(
+		`http://localhost:5184/api/Room?${new URLSearchParams(query).toString()}`,
+	);
+};
 </script>

@@ -1,5 +1,5 @@
 <template>
-	<h1 class="m-3 mb-6 max-w-screen-xl text-2xl font-semibold xl:mx-auto">
+	<h1 class="mb-6 text-center text-2xl font-semibold md:mb-12 md:text-4xl">
 		Connexion
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
@@ -15,7 +15,6 @@
 
 			<p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
 		</UForm>
-
 		<!-- ✅ Ajout du bouton d'inscription -->
 		<div class="mt-4 text-center">
 			<p class="text-gray-600">Vous n'avez pas de compte ?</p>
