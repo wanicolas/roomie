@@ -3,7 +3,7 @@
 		Réserver une salle
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
-		<UForm @submit="onSubmit" class="flex flex-col gap-3">
+		<UForm @submit="onSubmit" :state="formState" class="flex flex-col gap-3">
 			<UFormGroup label="Bâtiment">
 				<USelect required icon="ph:building" />
 			</UFormGroup>
@@ -126,6 +126,9 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import { useFetch } from "#app";
+
 useHead({
 	title: "Réserver une salle - Roomie, gestion et réservation de salles",
 	meta: [
@@ -151,8 +154,37 @@ const accessible = ref(false);
 const projector = ref(false);
 const speaker = ref(false);
 
+const rooms = ref([]);
+const error = ref(null);
+const status = ref("idle");
+
+const fetchRooms = async () => {
+	status.value = "pending";
+	error.value = null;
+
+	try {
+		const { data, error: fetchError } = await useFetch(
+			"http://localhost:5184/api/Room",
+		);
+		if (fetchError.value) {
+			error.value = fetchError.value.message;
+		} else {
+			rooms.value = data.value || [];
+		}
+	} catch (err) {
+		error.value = "Une erreur est survenue lors du chargement des salles.";
+	} finally {
+		status.value = "done";
+	}
+};
+
+onMounted(fetchRooms);
+
 const onSubmit = async () => {
-	const query = {
+	status.value = "pending";
+	error.value = null;
+
+	const query = new URLSearchParams({
 		availabilityDate: availabilityDate.value,
 		availabilityStartHour: availabilityStartHour.value,
 		availabilityEndHour: availabilityEndHour.value,
@@ -161,7 +193,7 @@ const onSubmit = async () => {
 		accessible: accessible.value,
 		projector: projector.value,
 		speaker: speaker.value,
-	};
+	});
 
 	const {
 		data: rooms,

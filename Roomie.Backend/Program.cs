@@ -18,35 +18,55 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=roomie.db"));
 
 // Ajouter Identity pour la gestion des utilisateurs
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false; // Désactiver la confirmation de compte
+})
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// Configuration de JWT
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
-builder.Services.AddAuthentication(options =>
+// Désactiver les redirections automatiques d'Identity (Login & AccessDenied)
+builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.Events.OnRedirectToLogin = context =>
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        ClockSkew = TimeSpan.Zero
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
     };
 });
-builder.Services.AddAuthorization();
 
+// Configuration de JWT
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secret = jwtSettings["Secret"];
+if (string.IsNullOrEmpty(secret))
+{
+    throw new Exception("La clé secrète JWT est manquante dans appsettings.json !");
+}
+var key = Encoding.UTF8.GetBytes(secret);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // Configuration CORS pour Nuxt.js
 var corsPolicyName = "AllowNuxt";
@@ -56,7 +76,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:3000") // Mets l'URL de ton front
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials(); // IMPORTANT pour que les tokens JWT soient envoyés
     });
 });
 
@@ -66,8 +87,16 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await DbInitializer.Initialize(services);
+    try
+    {
+        await DbInitializer.Initialize(services);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[ERREUR] Échec de l'initialisation de la BDD : {ex.Message}");
+    }
 }
+
 // Activer Swagger uniquement en mode développement
 if (app.Environment.IsDevelopment())
 {
@@ -82,8 +111,15 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
     RoomSeeder.Seed(context);
-    // Création automatique des rôles
-    await CreateRoles(services);
+
+    try
+    {
+        await CreateRoles(services);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[ERREUR] Impossible de créer les rôles : {ex.Message}");
+    }
 }
 
 // Middleware
@@ -107,6 +143,7 @@ async Task CreateRoles(IServiceProvider serviceProvider)
         if (!roleExists)
         {
             await roleManager.CreateAsync(new IdentityRole(roleName));
+            Console.WriteLine($"[INFO] Rôle créé : {roleName}");
         }
     }
 }

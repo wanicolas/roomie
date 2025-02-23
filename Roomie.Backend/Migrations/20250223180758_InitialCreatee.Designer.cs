@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Roomie.Backend.Data;
 
@@ -10,9 +11,11 @@ using Roomie.Backend.Data;
 namespace Roomie.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250223180758_InitialCreatee")]
+    partial class InitialCreatee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -145,6 +148,35 @@ namespace Roomie.Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Reservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly>("HeureDebut")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly>("HeureFin")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Reservations");
+                });
+
             modelBuilder.Entity("Roomie.Backend.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -213,34 +245,6 @@ namespace Roomie.Backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Roomie.Backend.Models.Reservation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("RoomId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reservations");
-                });
-
             modelBuilder.Entity("Roomie.Backend.Models.Room", b =>
                 {
                     b.Property<int>("Id")
@@ -286,50 +290,6 @@ namespace Roomie.Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Rooms");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AccessiblePMR = true,
-                            AvailableDate = new DateOnly(1, 1, 1),
-                            AvailableEndTime = new TimeOnly(0, 0, 0),
-                            AvailableStartTime = new TimeOnly(0, 0, 0),
-                            Building = "",
-                            Capacity = 20,
-                            Equipments = "Vidéoprojecteur, Enceintes",
-                            MinSeatingCapacity = 0,
-                            Name = "Salle Alpha",
-                            Surface = 0.0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AccessiblePMR = false,
-                            AvailableDate = new DateOnly(1, 1, 1),
-                            AvailableEndTime = new TimeOnly(0, 0, 0),
-                            AvailableStartTime = new TimeOnly(0, 0, 0),
-                            Building = "",
-                            Capacity = 50,
-                            Equipments = "Vidéoprojecteur",
-                            MinSeatingCapacity = 0,
-                            Name = "Salle Beta",
-                            Surface = 0.0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AccessiblePMR = true,
-                            AvailableDate = new DateOnly(1, 1, 1),
-                            AvailableEndTime = new TimeOnly(0, 0, 0),
-                            AvailableStartTime = new TimeOnly(0, 0, 0),
-                            Building = "",
-                            Capacity = 10,
-                            Equipments = "Enceintes",
-                            MinSeatingCapacity = 0,
-                            Name = "Salle Gamma",
-                            Surface = 0.0
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -383,7 +343,7 @@ namespace Roomie.Backend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Roomie.Backend.Models.Reservation", b =>
+            modelBuilder.Entity("Reservation", b =>
                 {
                     b.HasOne("Roomie.Backend.Models.Room", "Room")
                         .WithMany()
@@ -391,15 +351,7 @@ namespace Roomie.Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Roomie.Backend.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Room");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
