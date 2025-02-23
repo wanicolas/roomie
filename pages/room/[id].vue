@@ -18,7 +18,14 @@
 			<img :src="item" class="w-full" draggable="false" />
 		</UCarousel>
 
-		<UButton>Réserver cette salle le 03/02/2000 de 02:99 à 03:98</UButton>
+		<!-- Bouton de réservation visible pour les utilisateurs normaux -->
+		<UButton v-if="!isAdmin" @click="reserveRoom">Réserver cette salle</UButton>
+
+		<!-- Boutons pour l'admin -->
+		<div v-if="isAdmin" class="mt-4 flex gap-2">
+			<UButton color="yellow" @click="editRoom">Modifier</UButton>
+			<UButton color="red" @click="deleteRoom">Supprimer</UButton>
+		</div>
 
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
 			Capacité : {{ room.capacity }} personnes
@@ -51,6 +58,8 @@ useHead({
 });
 
 const route = useRoute();
+const token = process.client ? localStorage.getItem("token") : null;
+const isAdmin = process.client ? localStorage.getItem("role") === "Admin" : false;
 
 const {
 	data: room,
@@ -66,4 +75,30 @@ const items = [
 	"https://picsum.photos/1920/1080?random=5",
 	"https://picsum.photos/1920/1080?random=6",
 ];
+
+const reserveRoom = () => {
+	alert("Réservation en cours... (à implémenter)");
+};
+
+const editRoom = () => {
+	navigateTo(`/admin/room/edit/${route.params.id}`);
+};
+
+const deleteRoom = async () => {
+	if (!confirm("Voulez-vous vraiment supprimer cette salle ?")) return;
+
+	const response = await fetch(`http://localhost:5184/api/Room/${route.params.id}`, {
+		method: "DELETE",
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	if (response.ok) {
+		alert("Salle supprimée !");
+		navigateTo("/admin/room");
+	} else {
+		alert("Erreur lors de la suppression.");
+	}
+};
 </script>
