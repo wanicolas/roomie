@@ -17,8 +17,10 @@ definePageMeta({
 	middleware: "auth",
 });
 
+const router = useRouter();
+
 const logout = () => {
 	useCookie("auth_token").value = "";
-	router.push("/login");
+	router.push("/");
 };
 </script>

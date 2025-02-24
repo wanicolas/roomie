@@ -6,32 +6,47 @@
 		>
 			{{ room.name }}
 		</h1>
+		<p class="mb-4 text-lg">
+			Salle-vous-plaît ?
+			<UButton size="xl">
+				Réserver cette salle le {{ route.query.date }} de
+				{{ route.query.startHour }} à {{ route.query.endHour }}
+			</UButton>
+		</p>
 
 		<UCarousel
 			v-slot="{ item }"
 			:items="items"
 			:ui="{ item: 'basis-full' }"
-			class="overflow-hidden rounded-lg"
+			class="mb-6 overflow-hidden rounded-lg"
 			arrows
 			indicators
 		>
 			<img :src="item" class="w-full" draggable="false" />
 		</UCarousel>
 
-		<UButton>Réserver cette salle le 03/02/2000 de 02:99 à 03:98</UButton>
-
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
-			Capacité : {{ room.capacity }} personnes
-		</p>
-		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
-			Bâtiment : {{ room.building }}
-		</p>
-		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
-			Surface : {{ room.surface }} m²
+			Nombre de places assises : {{ room.seats }}
 		</p>
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
 			Accessibilité PMR : {{ room.isAccessible ? "Oui" : "Non" }}
 		</p>
+		<div>
+			Équipements disponibles :
+			<ul class="list-inside list-disc">
+				<li>
+					<UIcon
+						:name="room.hasProjector ? 'ph:check' : 'ph:x'"
+						class="size-4"
+					/>
+					Vidéoprojecteur
+				</li>
+				<li>
+					<UIcon :name="room.hasSpeaker ? 'ph:check' : 'ph:x'" class="size-4" />
+					Enceintes
+				</li>
+			</ul>
+		</div>
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
 			{{ room.description }}
 		</p>
@@ -58,12 +73,12 @@ const {
 	status,
 } = await useFetch(`http://localhost:5184/api/Room/${route.params.id}`);
 
-const items = [
-	"https://picsum.photos/1920/1080?random=1",
-	"https://picsum.photos/1920/1080?random=2",
-	"https://picsum.photos/1920/1080?random=3",
-	"https://picsum.photos/1920/1080?random=4",
-	"https://picsum.photos/1920/1080?random=5",
-	"https://picsum.photos/1920/1080?random=6",
-];
+// const items = [
+// 	"https://picsum.photos/1920/1080?random=1",
+// 	"https://picsum.photos/1920/1080?random=2",
+// 	"https://picsum.photos/1920/1080?random=3",
+// 	"https://picsum.photos/1920/1080?random=4",
+// 	"https://picsum.photos/1920/1080?random=5",
+// 	"https://picsum.photos/1920/1080?random=6",
+// ];
 </script>
