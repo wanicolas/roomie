@@ -21,37 +21,120 @@ namespace Roomie.API.Controllers
         [HttpPost("add-admin")]
         public async Task<IActionResult> AddAdmin([FromBody] AddAdminRequest request)
         {
-            // Trouver l'utilisateur par son email
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            try 
+            {
+                // Vérifier si l'email est fourni
+                if (string.IsNullOrEmpty(request.Email))
+                {
+                    return BadRequest(new { message = "L'email est requis." });
+                }
+
+                // Trouver l'utilisateur
+                var user = await _userManager.FindByEmailAsync(request.Email);
+                if (user == null)
+                {
+                    return NotFound(new { message = "Utilisateur non trouvé." });
+                }
+
+                // Vérifier si le rôle Admin existe
+                var roleExists = await _roleManager.RoleExistsAsync("Admin");
+                if (!roleExists)
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+
+                // Vérifier si l'utilisateur est déjà admin
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    return BadRequest(new { message = "L'utilisateur est déjà admin." });
+                }
+
+                // Ajouter le rôle
+                var result = await _userManager.AddToRoleAsync(user, "Admin");
+                if (result.Succeeded)
+                {
+                    return Ok(new { message = "Utilisateur promu admin avec succès." });
+                }
+
+                return BadRequest(new { message = "Échec de l'ajout du rôle admin." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erreur interne du serveur.", error = ex.Message });
+            }
+        }
+
+        [HttpGet("check-role")]
+        public async Task<IActionResult> CheckRole([FromQuery] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return NotFound(new { message = "Utilisateur non trouvé." });
+                return NotFound(new { message = "Utilisateur non trouvé" });
             }
 
-            // Vérifier si le rôle Admin existe, sinon le créer
-            var roleExist = await _roleManager.RoleExistsAsync("Admin");
-            if (!roleExist)
+            var roles = await _userManager.GetRolesAsync(user);
+            
+            return Ok(new { 
+                email = user.Email,
+                roles = roles 
+            });
+        }
+
+        [HttpPost("force-admin")]
+        public async Task<IActionResult> ForceAdmin([FromBody] AddAdminRequest request)
+        {
+            try 
             {
-                var createRoleResult = await _roleManager.CreateAsync(new IdentityRole("Admin"));
-                if (!createRoleResult.Succeeded)
+                // Vérifier si l'utilisateur existe
+                var user = await _userManager.FindByEmailAsync(request.Email);
+                if (user == null)
                 {
-                    return BadRequest(new { message = "Erreur lors de la création du rôle Admin." });
+                    return NotFound(new { message = "Utilisateur non trouvé" });
                 }
-            }
 
-            // Ajouter l'utilisateur au rôle Admin
-            var result = await _userManager.AddToRoleAsync(user, "Admin");
-            if (result.Succeeded)
+                // Vérifier si le rôle Admin existe
+                if (!await _roleManager.RoleExistsAsync("Admin"))
+                {
+                    var roleResult = await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                    if (!roleResult.Succeeded)
+                    {
+                        return BadRequest(new { message = "Impossible de créer le rôle Admin", errors = roleResult.Errors });
+                    }
+                }
+
+                // Vérifier si l'utilisateur a déjà le rôle Admin
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    return Ok(new { message = "L'utilisateur a déjà le rôle Admin" });
+                }
+
+                // Ajouter le rôle Admin
+                var result = await _userManager.AddToRoleAsync(user, "Admin");
+                if (result.Succeeded)
+                {
+                    return Ok(new { message = "Rôle Admin ajouté avec succès" });
+                }
+
+                // Si l'ajout a échoué, retourner les erreurs détaillées
+                return BadRequest(new { 
+                    message = "Échec de l'ajout du rôle Admin",
+                    errors = result.Errors.Select(e => new { e.Code, e.Description })
+                });
+            }
+            catch (Exception ex)
             {
-                return Ok(new { message = "Utilisateur ajouté comme administrateur avec succès." });
+                return StatusCode(500, new { 
+                    message = "Erreur lors de l'ajout du rôle Admin",
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace
+                });
             }
-
-            return BadRequest(new { message = "Échec de l'ajout de l'utilisateur au rôle Admin." });
         }
     }
 
     public class AddAdminRequest
     {
-        public required string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
     }
 }

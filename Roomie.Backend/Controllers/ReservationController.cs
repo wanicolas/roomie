@@ -73,5 +73,39 @@ namespace Roomie.Backend.Controllers
 
             return Ok(reservations);
         }
+
+        [HttpGet("admin/all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllReservations()
+        {
+            var reservations = await _context.Reservations
+                .Include(r => r.Room)
+                .Include(r => r.User)
+                .OrderBy(r => r.StartTime)
+                .ToListAsync();
+
+            return Ok(reservations);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> CancelReservation(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+            
+            if (reservation == null)
+                return NotFound();
+
+            // Vérifier si l'utilisateur est admin ou propriétaire de la réservation
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var isAdmin = User.IsInRole("Admin");
+            
+            if (!isAdmin && reservation.UserId != userId)
+                return Forbid();
+
+            _context.Reservations.Remove(reservation);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

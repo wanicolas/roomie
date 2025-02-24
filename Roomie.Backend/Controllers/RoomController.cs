@@ -3,7 +3,9 @@ using Roomie.Backend.Data;
 using Roomie.Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Roomie.Backend.Controllers
 {
@@ -11,11 +13,18 @@ namespace Roomie.Backend.Controllers
     [ApiController]
     public class RoomController : ControllerBase
     {
-        private readonly AppDbContext _context;  // Utiliser AppDbContext
+        private readonly AppDbContext _context;
+        private readonly ILogger<RoomController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RoomController(AppDbContext context)  // Utiliser AppDbContext
+        public RoomController(
+            AppDbContext context,
+            ILogger<RoomController> logger,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _logger = logger;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -76,17 +85,55 @@ namespace Roomie.Backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+		[Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRoom(int id)
         {
-            var room = await _context.Rooms.FindAsync(id);
-            if (room == null)
-                return NotFound();
+			Console.WriteLine("DeleteRoom");
+            try
+            {
+                _logger.LogInformation("User Identity: {identity}", User.Identity?.Name);
+                _logger.LogInformation("Is Authenticated: {auth}", User.Identity?.IsAuthenticated);
+                
+                foreach (var claim in User.Claims)
+                {
+                    _logger.LogInformation("Claim Found - Type: {type}, Value: {value}", 
+                        claim.Type, claim.Value);
+                }
 
-            _context.Rooms.Remove(room);
-            await _context.SaveChangesAsync();
+                var isAdmin = User.Claims.Any(c => 
+                    c.Type == ClaimTypes.Role && 
+                    c.Value == "Admin");
 
-            return NoContent();
+                if (!isAdmin)
+                {
+                    _logger.LogWarning("Utilisateur non admin");
+                    return Forbid();
+                }
+
+                var room = await _context.Rooms.FindAsync(id);
+                if (room == null)
+                {
+                    return NotFound(new { message = "Salle non trouvée" });
+                }
+
+                var hasReservations = await _context.Reservations
+                    .AnyAsync(r => r.RoomId == id);
+
+                if (hasReservations)
+                {
+                    return BadRequest(new { message = "Impossible de supprimer une salle avec des réservations" });
+                }
+
+                _context.Rooms.Remove(room);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Salle supprimée avec succès" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de la suppression de la salle");
+                return StatusCode(500, new { message = "Erreur interne du serveur", details = ex.Message });
+            }
         }
 
     }
