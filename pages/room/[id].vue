@@ -6,6 +6,7 @@
 		>
 			{{ room.name }}
 		</h1>
+		
 		<p class="mb-4 text-lg">
 			Salle-vous-plaît ?
 			<UButton size="xl">
@@ -25,29 +26,29 @@
 			<img :src="item" class="w-full" draggable="false" />
 		</UCarousel>
 
-		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
+		<p class="mb-4">
 			Nombre de places assises : {{ room.seats }}
 		</p>
-		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
+		<p class="mb-4">
 			Accessibilité PMR : {{ room.isAccessible ? "Oui" : "Non" }}
 		</p>
 		<div>
 			Équipements disponibles :
-			<ul class="list-inside list-disc">
-				<li>
+			<ul>
+				<li class="flex items-center gap-2">
 					<UIcon
 						:name="room.hasProjector ? 'ph:check' : 'ph:x'"
-						class="size-4"
+						class="size-5" :class="room.hasProjector ? 'text-green-600' : 'text-red-600'"
 					/>
 					Vidéoprojecteur
 				</li>
-				<li>
-					<UIcon :name="room.hasSpeaker ? 'ph:check' : 'ph:x'" class="size-4" />
+				<li class="flex items-center gap-2">
+					<UIcon :name="room.hasSpeaker ? 'ph:check' : 'ph:x'" class="size-5" :class="room.hasProjector ? 'text-green-600' : 'text-red-600'"" />
 					Enceintes
 				</li>
 			</ul>
 		</div>
-		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
+		<p>
 			{{ room.description }}
 		</p>
 	</div>
