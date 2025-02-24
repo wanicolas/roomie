@@ -4,7 +4,7 @@ public class Room
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string Building { get; set; } = string.Empty;
+
     public int Capacity { get; set; }
     public DateOnly AvailableDate { get; set; }
     public TimeOnly AvailableStartTime { get; set; }

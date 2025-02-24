@@ -38,6 +38,7 @@ namespace Roomie.Backend.Controllers
 
             return Ok(rooms);
         }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Room>> GetRoom(int id)
         {
@@ -51,7 +52,6 @@ namespace Roomie.Backend.Controllers
             return Ok(room);
         }
 
-
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateRoom([FromBody] Room room)
@@ -63,7 +63,6 @@ namespace Roomie.Backend.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
-
         }
 
         [HttpPut("{id}")]
@@ -79,21 +78,21 @@ namespace Roomie.Backend.Controllers
             room.Surface = updatedRoom.Surface;
             room.AccessiblePMR = updatedRoom.AccessiblePMR;
             room.Equipments = updatedRoom.Equipments;
+            room.MinSeatingCapacity = updatedRoom.MinSeatingCapacity;
 
             await _context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-		[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRoom(int id)
         {
-			Console.WriteLine("DeleteRoom");
             try
             {
                 _logger.LogInformation("User Identity: {identity}", User.Identity?.Name);
                 _logger.LogInformation("Is Authenticated: {auth}", User.Identity?.IsAuthenticated);
-                
+
                 foreach (var claim in User.Claims)
                 {
                     _logger.LogInformation("Claim Found - Type: {type}, Value: {value}", 
@@ -135,7 +134,5 @@ namespace Roomie.Backend.Controllers
                 return StatusCode(500, new { message = "Erreur interne du serveur", details = ex.Message });
             }
         }
-
     }
-    
 }

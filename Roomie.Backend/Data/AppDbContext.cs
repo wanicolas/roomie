@@ -7,8 +7,7 @@ namespace Roomie.Backend.Data
     public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
-
-        public DbSet<Room> Rooms { get; set; }
+		public DbSet<Booking> Bookings { get; set; }        public DbSet<Room> Rooms { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

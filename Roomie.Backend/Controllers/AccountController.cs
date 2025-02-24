@@ -31,34 +31,46 @@ namespace Roomie.Backend.Controllers
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return Unauthorized("Email ou mot de passe incorrect.");
+            {
+                return Unauthorized(new { message = "Email incorrect." });
+            }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
             if (!result.Succeeded)
-                return Unauthorized("Email ou mot de passe incorrect.");
+            {
+                return Unauthorized(new { message = "Mot de passe incorrect." });
+            }
 
-            var token = GenerateJwtToken(user);
+            // ✅ Correction : Retourner le token généré après authentification
+            var token = await GenerateJwtToken(user);
             return Ok(new { Token = token });
         }
 
-        private string GenerateJwtToken(ApplicationUser user)
+        private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]!));
+            var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("Clé JWT manquante dans la configuration.");
+            var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("Issuer JWT manquant.");
+            var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("Audience JWT manquante.");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-                new Claim(ClaimTypes.Role, "User") // Change selon les rôles
+                new Claim(JwtRegisteredClaimNames.Email, user.Email!)
             };
 
+            // ✅ Récupérer dynamiquement les rôles
+            var roles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
             var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(Convert.ToInt32(jwtSettings["TokenExpiryHours"])),
+                expires: DateTime.UtcNow.AddHours(Convert.ToInt32(jwtSettings["TokenExpiryHours"] ?? "24")),
                 signingCredentials: creds
             );
 

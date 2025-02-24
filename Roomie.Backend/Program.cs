@@ -6,29 +6,25 @@ using Roomie.Backend.Data;
 using Roomie.Backend.Models;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Remplacer les deux configurations CORS par une seule
+// 🔹 Configuration CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
         builder
-            .WithOrigins(
-                "http://localhost:3000",
-                "http://localhost:5184"
-            )
+            .WithOrigins("http://localhost:3000", "http://localhost:5184")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
     });
 });
 
-// Ajouter les services MVC
+// 🔹 Ajout des services MVC et Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -40,11 +36,10 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API pour la gestion des salles et réservations"
     });
 
-    // Définition de la sécurité JWT
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
@@ -67,19 +62,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Ajouter la connexion SQLite
+// 🔹 Configuration de la base de données SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=roomie.db"));
 
-// Ajouter Identity pour la gestion des utilisateurs
+// 🔹 Configuration d'Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false; // Désactiver la confirmation de compte
+    options.SignIn.RequireConfirmedAccount = false;
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// Désactiver les redirections automatiques d'Identity (Login & AccessDenied)
+// 🔹 Désactiver les redirections automatiques d'Identity
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Events.OnRedirectToLogin = context =>
@@ -94,61 +89,47 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-// Configuration JWT
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ClockSkew = TimeSpan.Zero
-    };
+// 🔹 Configuration JWT (⚠️ Vérifier que les valeurs existent dans appsettings.json)
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is missing");
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is missing");
+var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
 
-    options.Events = new JwtBearerEvents
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        OnTokenValidated = async context =>
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            var logger = context.HttpContext.RequestServices
-                .GetRequiredService<ILogger<Program>>();
-            
-            logger.LogInformation("Token validé pour l'utilisateur: {user}", 
-                context.Principal?.Identity?.Name);
-            
-            foreach (var claim in context.Principal?.Claims ?? Enumerable.Empty<Claim>())
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
             {
-                logger.LogInformation("Claim dans le token - Type: {type}, Value: {value}", 
-                    claim.Type, claim.Value);
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("Token validé pour l'utilisateur: {user}", context.Principal?.Identity?.Name);
+            },
+            OnAuthenticationFailed = context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogError("Échec de l'authentification: {error}", context.Exception.Message);
+                return Task.CompletedTask;
             }
-        },
-        OnAuthenticationFailed = context =>
-        {
-            var logger = context.HttpContext.RequestServices
-                .GetRequiredService<ILogger<Program>>();
-            
-            logger.LogError("Échec de l'authentification: {error}", 
-                context.Exception.Message);
-            
-            return Task.CompletedTask;
-        }
-    };
-});
+        };
+    });
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Initialiser la BDD avec un admin si besoin
+// 🔹 Initialiser la base de données et ajouter un admin
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -162,14 +143,14 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Activer Swagger uniquement en mode développement
+// 🔹 Activer Swagger uniquement en mode développement
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Initialiser la base de données et ajouter des données de test
+// 🔹 Initialiser la base de données et ajouter des rôles si besoin
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -187,24 +168,22 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Middleware
+// 🔹 Middleware
 app.UseHttpsRedirection();
-
-// Ajouter UseCors() juste avant UseAuthentication
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Afficher la configuration au démarrage
-Console.WriteLine($"JWT Issuer: {app.Configuration["Jwt:Issuer"]}");
-Console.WriteLine($"JWT Audience: {app.Configuration["Jwt:Audience"]}");
-Console.WriteLine($"JWT Key length: {app.Configuration["Jwt:Key"]?.Length ?? 0}");
+// 🔹 Vérification des configs (⚠️ Ne pas afficher la clé)
+Console.WriteLine($"JWT Issuer: {jwtIssuer}");
+Console.WriteLine($"JWT Audience: {jwtAudience}");
+Console.WriteLine($"JWT Key length: {jwtKey.Length} (ne pas afficher en prod)");
 
 app.Run();
 
-// Méthode pour créer les rôles si ils n'existent pas
+// 🔹 Méthode pour créer les rôles si ils n'existent pas
 async Task CreateRoles(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -212,8 +191,7 @@ async Task CreateRoles(IServiceProvider serviceProvider)
 
     foreach (var roleName in roleNames)
     {
-        var roleExists = await roleManager.RoleExistsAsync(roleName);
-        if (!roleExists)
+        if (!await roleManager.RoleExistsAsync(roleName))
         {
             await roleManager.CreateAsync(new IdentityRole(roleName));
             Console.WriteLine($"[INFO] Rôle créé : {roleName}");

@@ -13,7 +13,6 @@ namespace Roomie.Backend.Data
                     new Room
                     {
                         Name = "Salle Alpha",
-                        Building = "Bâtiment A",
                         Capacity = 20,
                         AvailableDate = DateOnly.FromDateTime(DateTime.Today),
                         AvailableStartTime = new TimeOnly(9, 0),
@@ -27,7 +26,6 @@ namespace Roomie.Backend.Data
                     new Room
                     {
                         Name = "Salle Beta",
-                        Building = "Bâtiment B",
                         Capacity = 50,
                         AvailableDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
                         AvailableStartTime = new TimeOnly(8, 0),
