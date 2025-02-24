@@ -4,65 +4,34 @@
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
 		<UForm @submit="onSubmit" :state="formState" class="flex flex-col gap-3">
+		<UForm @submit="onSubmit" :state="formState" class="flex flex-col gap-3">
 			<UFormGroup label="Bâtiment">
 				<USelect required icon="ph:building" />
 			</UFormGroup>
 			<UFormGroup label="Date de disponibilité">
-				<UInput
-					required
-					type="date"
-					icon="ph:calendar"
-					v-model="availabilityDate"
-				/>
+				<UInput required type="date" icon="ph:calendar" v-model="availabilityDate" />
 			</UFormGroup>
 			<UFormGroup label="Heure de début">
-				<UInput
-					required
-					type="time"
-					icon="ph:clock"
-					v-model="availabilityStartHour"
-				/>
+				<UInput required type="time" icon="ph:clock" v-model="availabilityStartHour" />
 			</UFormGroup>
 			<UFormGroup label="Heure de fin">
-				<UInput
-					required
-					type="time"
-					icon="ph:clock"
-					v-model="availabilityEndHour"
-				/>
+				<UInput required type="time" icon="ph:clock" v-model="availabilityEndHour" />
 			</UFormGroup>
 
 			<details class="space-y-3">
-				<summary
-					class="ml-auto flex w-fit list-none items-center gap-2 rounded-md bg-gray-200 px-2 py-1 text-sm text-gray-600 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300"
-				>
+				<summary class="ml-auto flex w-fit list-none items-center gap-2 rounded-md bg-gray-200 px-2 py-1 text-sm text-gray-600 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300">
 					Plus de filtres
 					<UIcon name="ph:caret-down" class="size-5" />
 				</summary>
 				<UFormGroup label="Capacité en nombre de personnes">
-					<UInput
-						type="number"
-						min="0"
-						icon="ph:users-three"
-						v-model="peopleCapacity"
-					/>
+					<UInput type="number" min="0" icon="ph:users-three" v-model="peopleCapacity" />
 				</UFormGroup>
 				<UFormGroup label="Places assises minimum">
-					<UInput
-						type="number"
-						min="0"
-						icon="ph:office-chair"
-						v-model="seats"
-					/>
+					<UInput type="number" min="0" icon="ph:office-chair" v-model="seats" />
 				</UFormGroup>
-				<UCheckbox
-					label="Obligatoirement accessible aux PMR"
-					v-model="accessible"
-				/>
+				<UCheckbox label="Obligatoirement accessible aux PMR" v-model="accessible" />
 				<fieldset>
-					<legend class="mb-1 text-sm font-medium">
-						Équipements disponibles :
-					</legend>
+					<legend class="mb-1 text-sm font-medium">Équipements disponibles :</legend>
 					<UCheckbox label="Vidéoprojecteur" v-model="projector" />
 					<UCheckbox label="Enceintes" v-model="speaker" />
 				</fieldset>
@@ -131,12 +100,7 @@ import { useFetch } from "#app";
 
 useHead({
 	title: "Réserver une salle - Roomie, gestion et réservation de salles",
-	meta: [
-		{
-			name: "description",
-			content: "Réservez une salle et trouvez des disponibilités.",
-		},
-	],
+	meta: [{ name: "description", content: "Réservez une salle et trouvez des disponibilités." }],
 });
 
 definePageMeta({
@@ -185,6 +149,10 @@ const onSubmit = async () => {
 	error.value = null;
 
 	const query = new URLSearchParams({
+	status.value = "pending";
+	error.value = null;
+
+	const query = new URLSearchParams({
 		availabilityDate: availabilityDate.value,
 		availabilityStartHour: availabilityStartHour.value,
 		availabilityEndHour: availabilityEndHour.value,
@@ -193,6 +161,7 @@ const onSubmit = async () => {
 		accessible: accessible.value,
 		projector: projector.value,
 		speaker: speaker.value,
+	});
 	});
 
 	const {
