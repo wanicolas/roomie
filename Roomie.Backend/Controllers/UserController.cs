@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Roomie.Backend.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Roomie.API.Controllers
 {
@@ -10,11 +12,16 @@ namespace Roomie.API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserController(
+            UserManager<ApplicationUser> userManager, 
+            RoleManager<IdentityRole> roleManager,
+            ILogger<UserController> logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _logger = logger;
         }
 
         // Ajouter un utilisateur en tant qu'admin
@@ -129,6 +136,78 @@ namespace Roomie.API.Controllers
                     error = ex.Message,
                     stackTrace = ex.StackTrace
                 });
+            }
+        }
+
+        [HttpGet("info")]
+        [Authorize]
+        public async Task<ActionResult<UserInfoDTO>> GetUserInfo()
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("Utilisateur non authentifié");
+                }
+
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound("Utilisateur non trouvé");
+                }
+
+                var roles = await _userManager.GetRolesAsync(user);
+
+                var userInfo = new UserInfoDTO
+                {
+                    Id = user.Id,
+                    Email = user.Email ?? string.Empty,
+                    FullName = user.FullName,
+                    Roles = roles.ToList()
+                };
+
+                return Ok(userInfo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de la récupération des informations utilisateur");
+                return StatusCode(500, "Erreur interne du serveur");
+            }
+        }
+
+        [HttpPut("info")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserInfo([FromBody] UserInfoDTO userInfo)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("Utilisateur non authentifié");
+                }
+
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound("Utilisateur non trouvé");
+                }
+
+                user.FullName = userInfo.FullName;
+                
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur lors de la mise à jour des informations utilisateur");
+                return StatusCode(500, "Erreur interne du serveur");
             }
         }
     }
