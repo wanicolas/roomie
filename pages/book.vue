@@ -99,7 +99,7 @@
 					<div
 						class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
 					>
-						<img class="h-60 w-full object-cover" src="/room.webp" alt="" />
+						<img class="h-60 w-full object-cover" :src="room.img" alt="" />
 						<div class="flex items-baseline justify-between p-3">
 							<div>
 								<div class="text-xl font-medium">{{ room.name }}</div>

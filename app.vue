@@ -14,7 +14,9 @@
 				<NuxtLink to="/book" class="underline-offset-4 hover:underline">
 					Réserver
 				</NuxtLink>
-				<UButton v-if="userConnected" @click="logout">Déconnexion</UButton>
+				<NuxtLink v-if="userConnected" to="/user/profile" class="leading-[0]">
+					<UIcon name="ph:user" class="size-5" />
+				</NuxtLink>
 				<template v-else>
 					<NuxtLink to="/login" class="underline-offset-4 hover:underline">
 						Connexion
