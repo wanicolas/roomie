@@ -1,17 +1,18 @@
 <template>
 	<div v-if="error">{{ error }}</div>
 	<div v-else class="mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
-		<div
-			class="gzp-3 mb-8 flex flex-col justify-between lg:flex-row lg:items-center"
+		<h1
+			class="mb-8 text-4xl font-semibold text-primary-700 dark:text-primary-300"
 		>
-			<h1 class="text-4xl font-semibold text-primary-700 dark:text-primary-300">
-				{{ room.name }}
-			</h1>
-			<UButton>
+			{{ room.name }}
+		</h1>
+		<p class="mb-4 text-lg">
+			Salle-vous-plaît ?
+			<UButton size="xl">
 				Réserver cette salle le {{ route.query.date }} de
 				{{ route.query.startHour }} à {{ route.query.endHour }}
 			</UButton>
-		</div>
+		</p>
 
 		<UCarousel
 			v-slot="{ item }"
@@ -25,17 +26,27 @@
 		</UCarousel>
 
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
-			Capacité : {{ room.capacity }} personnes
-		</p>
-		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
-			Bâtiment : {{ room.building }}
-		</p>
-		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
-			Surface : {{ room.surface }} m²
+			Nombre de places assises : {{ room.seats }}
 		</p>
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
 			Accessibilité PMR : {{ room.isAccessible ? "Oui" : "Non" }}
 		</p>
+		<div>
+			Équipements disponibles :
+			<ul class="list-inside list-disc">
+				<li>
+					<UIcon
+						:name="room.hasProjector ? 'ph:check' : 'ph:x'"
+						class="size-4"
+					/>
+					Vidéoprojecteur
+				</li>
+				<li>
+					<UIcon :name="room.hasSpeaker ? 'ph:check' : 'ph:x'" class="size-4" />
+					Enceintes
+				</li>
+			</ul>
+		</div>
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
 			{{ room.description }}
 		</p>
@@ -62,12 +73,12 @@ const {
 	status,
 } = await useFetch(`http://localhost:5184/api/Room/${route.params.id}`);
 
-const items = [
-	"https://picsum.photos/1920/1080?random=1",
-	"https://picsum.photos/1920/1080?random=2",
-	"https://picsum.photos/1920/1080?random=3",
-	"https://picsum.photos/1920/1080?random=4",
-	"https://picsum.photos/1920/1080?random=5",
-	"https://picsum.photos/1920/1080?random=6",
-];
+// const items = [
+// 	"https://picsum.photos/1920/1080?random=1",
+// 	"https://picsum.photos/1920/1080?random=2",
+// 	"https://picsum.photos/1920/1080?random=3",
+// 	"https://picsum.photos/1920/1080?random=4",
+// 	"https://picsum.photos/1920/1080?random=5",
+// 	"https://picsum.photos/1920/1080?random=6",
+// ];
 </script>

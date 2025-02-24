@@ -24,6 +24,7 @@
 				<UCheckbox label="Enceintes" v-model="speaker" />
 			</fieldset>
 
+			<UButton color="red" variant="outline" block>Supprimer la salle</UButton>
 			<UButton type="submit" block>Mettre à jour la salle</UButton>
 		</UForm>
 	</div>
@@ -46,12 +47,20 @@ definePageMeta({
 
 const route = useRoute();
 
+const {
+	data: room,
+	error,
+	status,
+} = await useFetch(`http://localhost:5184/api/Room/${route.params.id}`);
+
+// todo : bind v-model to received data
 const peopleCapacity = ref("");
 const seats = ref("");
 const accessible = ref(false);
 const projector = ref(false);
 const speaker = ref(false);
 
+// todo : send data to the edit api
 async function updateRoom() {
 	const result = await $fetch(
 		`http://localhost:5184/api/Room?${route.params.id}`,

@@ -4,9 +4,6 @@
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
 		<UForm @submit="onSubmit" class="flex flex-col gap-3">
-			<UFormGroup label="Bâtiment">
-				<USelect required icon="ph:building" />
-			</UFormGroup>
 			<UFormGroup label="Date de disponibilité">
 				<UInput
 					required
@@ -31,6 +28,9 @@
 					v-model="availabilityEndHour"
 				/>
 			</UFormGroup>
+			<UFormGroup label="Nombre de places assises minimum">
+				<UInput type="number" min="0" icon="ph:office-chair" v-model="seats" />
+			</UFormGroup>
 
 			<details class="space-y-3">
 				<summary
@@ -39,22 +39,6 @@
 					Plus de filtres
 					<UIcon name="ph:caret-down" class="size-5" />
 				</summary>
-				<UFormGroup label="Capacité en nombre de personnes">
-					<UInput
-						type="number"
-						min="0"
-						icon="ph:users-three"
-						v-model="peopleCapacity"
-					/>
-				</UFormGroup>
-				<UFormGroup label="Nombre de places assises minimum">
-					<UInput
-						type="number"
-						min="0"
-						icon="ph:office-chair"
-						v-model="seats"
-					/>
-				</UFormGroup>
 				<UCheckbox
 					label="Obligatoirement accessible aux PMR"
 					v-model="accessible"
@@ -145,31 +129,14 @@ const showRooms = ref(false);
 const availabilityDate = ref("");
 const availabilityStartHour = ref("");
 const availabilityEndHour = ref("");
-const peopleCapacity = ref("");
 const seats = ref("");
 const accessible = ref(false);
 const projector = ref(false);
 const speaker = ref(false);
 
 const onSubmit = async () => {
-	const query = {
-		availabilityDate: availabilityDate.value,
-		availabilityStartHour: availabilityStartHour.value,
-		availabilityEndHour: availabilityEndHour.value,
-		peopleCapacity: peopleCapacity.value,
-		seats: seats.value,
-		accessible: accessible.value,
-		projector: projector.value,
-		speaker: speaker.value,
-	};
-
-	const {
-		data: rooms,
-		error,
-		status,
-	} = await useFetch(
-		`http://localhost:5184/api/Room?${new URLSearchParams(query).toString()}`,
-	);
+	// todo : add query to fetch rooms
+	const fetchRooms = await useFetch(`http://localhost:5184/api/Room`);
 
 	showRooms.value = true;
 };
