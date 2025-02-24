@@ -5,16 +5,22 @@
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
 		<UForm @submit.prevent="register" class="mb-6">
 			<UFormGroup label="Entrez votre nom" class="mb-3">
-				<UInput v-model="fullName" icon="ph:user" />
+				<UInput v-model="fullName" required icon="ph:user" />
 			</UFormGroup>
 			<UFormGroup label="Entrez votre email" class="mb-3">
-				<UInput v-model="email" type="email" icon="ph:envelope" />
+				<UInput v-model="email" type="email" required icon="ph:envelope" />
 			</UFormGroup>
-			<UFormGroup label="Créez un mot de passe" class="mb-6">
+			<UFormGroup
+				help="Le mot de passe doit contenir au moins 6 caractères dont un chiffre, une majuscule et un caractère spécial."
+				label="Créez un mot de passe"
+				class="mb-6"
+			>
 				<UInput
 					v-model="password"
 					type="password"
+					required
 					autocomplete="new-password"
+					pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$"
 					icon="ph:lock"
 				/>
 			</UFormGroup>

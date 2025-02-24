@@ -1,24 +1,28 @@
 <template>
 	<div v-if="error">{{ error }}</div>
 	<div v-else class="mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
-		<h1
-			class="mb-8 text-4xl font-semibold text-primary-700 dark:text-primary-300"
+		<div
+			class="gzp-3 mb-8 flex flex-col justify-between lg:flex-row lg:items-center"
 		>
-			{{ room.name }}
-		</h1>
+			<h1 class="text-4xl font-semibold text-primary-700 dark:text-primary-300">
+				{{ room.name }}
+			</h1>
+			<UButton>
+				Réserver cette salle le {{ route.query.date }} de
+				{{ route.query.startHour }} à {{ route.query.endHour }}
+			</UButton>
+		</div>
 
 		<UCarousel
 			v-slot="{ item }"
 			:items="items"
 			:ui="{ item: 'basis-full' }"
-			class="overflow-hidden rounded-lg"
+			class="mb-6 overflow-hidden rounded-lg"
 			arrows
 			indicators
 		>
 			<img :src="item" class="w-full" draggable="false" />
 		</UCarousel>
-
-		<UButton>Réserver cette salle le 03/02/2000 de 02:99 à 03:98</UButton>
 
 		<p class="mb-4 text-lg text-gray-600 dark:text-gray-300">
 			Capacité : {{ room.capacity }} personnes

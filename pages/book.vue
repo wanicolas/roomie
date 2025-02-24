@@ -47,7 +47,7 @@
 						v-model="peopleCapacity"
 					/>
 				</UFormGroup>
-				<UFormGroup label="Places assises minimum">
+				<UFormGroup label="Nombre de places assises minimum">
 					<UInput
 						type="number"
 						min="0"
