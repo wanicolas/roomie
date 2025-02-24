@@ -11,18 +11,18 @@
 		>
 			<Logo />
 			<nav class="flex items-center gap-6 md:gap-10">
-			<!-- Bouton de déconnexion visible uniquement si connecté -->
-			<button v-if="isAuthenticated" @click="logout" class="text-red-400">Se déconnecter</button>
-
-				<!-- Bouton "Réserver" toujours visible -->
 				<NuxtLink to="/book" class="underline-offset-4 hover:underline">
 					Réserver
 				</NuxtLink>
-
-				<!-- Bouton "Login" caché si connecté -->
-				<NuxtLink v-if="!isAuthenticated" to="/login" class="underline-offset-4 hover:underline">
-					Login
-				</NuxtLink>
+				<UButton v-if="userConnected" @click="logout">Déconnexion</UButton>
+				<template v-else>
+					<NuxtLink to="/login" class="underline-offset-4 hover:underline">
+						Connexion
+					</NuxtLink>
+					<NuxtLink to="/register" class="underline-offset-4 hover:underline">
+						Inscription
+					</NuxtLink>
+				</template>
 				<button
 					class="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
 					@click="toggleColorMode"
@@ -67,31 +67,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-const token = useState('token', () => null) // Crée un state global pour le token
-
-// Vérifie si un token est présent au chargement
-onMounted(() => {
-  token.value = localStorage.getItem('token') || null
-})
-
-const isAuthenticated = computed(() => !!token.value) // Permet d'afficher dynamiquement les boutons
-
-const logout = () => {
-  localStorage.removeItem('token')
-  token.value = null // Met à jour immédiatement pour cacher le bouton
-  router.push('/login')
-}
-
 const colorMode = useColorMode();
+
 const toggleColorMode = () => {
 	colorMode.preference = colorMode.preference === "light" ? "dark" : "light";
 };
-</script>
 
+const authCookie = useCookie("auth_token");
+const userConnected = ref(false);
+
+watchEffect(() => {
+	if (authCookie.value) userConnected.value = true;
+	else userConnected.value = false;
+});
+
+const router = useRouter();
+
+const logout = () => {
+	useCookie("auth_token").value = "";
+	router.push("/login");
+};
+</script>
 
 <style>
 /* Transition between pages */

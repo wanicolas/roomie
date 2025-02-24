@@ -1,77 +1,73 @@
 <template>
-	<h1 class="m-3 mb-6 max-w-screen-xl text-2xl font-semibold xl:mx-auto">
+	<h1 class="mb-6 text-center text-2xl font-semibold md:mb-12 md:text-4xl">
 		Inscription
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
-		<UForm @submit.prevent="register" class="flex flex-col gap-3">
-			<UFormGroup label="Nom complet">
-				<UInput v-model="fullName" icon="ph:user" type="text" required />
+		<UForm @submit.prevent="register" class="mb-6">
+			<UFormGroup label="Entrez votre nom" class="mb-3">
+				<UInput v-model="fullName" icon="ph:user" />
 			</UFormGroup>
-			<UFormGroup label="Email">
-				<UInput v-model="email" icon="ph:envelope" type="email" required />
+			<UFormGroup label="Entrez votre email" class="mb-3">
+				<UInput v-model="email" type="email" icon="ph:envelope" />
 			</UFormGroup>
-			<UFormGroup label="Mot de passe">
-				<UInput v-model="password" icon="ph:lock" type="password" required />
+			<UFormGroup label="Créez un mot de passe" class="mb-6">
+				<UInput
+					v-model="password"
+					type="password"
+					autocomplete="new-password"
+					icon="ph:lock"
+				/>
 			</UFormGroup>
 
-			<UButton type="submit" block :loading="isLoading">S'inscrire</UButton>
-
-            <!-- Affichage des erreurs -->
-            <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
-            <ul v-if="errorDetails.length">
-                <li v-for="(error, index) in errorDetails" :key="index" class="text-red-500">
-                    - {{ error }}
-                </li>
-            </ul>
+			<UButton type="submit" block>Créer mon compte</UButton>
 		</UForm>
+
+		<p v-if="error">{{ error }}</p>
+
+		<p class="text-center">
+			Déjà membre ?
+			<NuxtLink
+				to="/login"
+				class="text-primary-700 underline-offset-4 hover:underline dark:text-primary-300"
+			>
+				On se connecte !
+			</NuxtLink>
+		</p>
 	</div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+useHead({
+	title: "Inscription - Roomie, gestion et réservation de salles",
+	meta: [
+		{
+			name: "description",
+			content: "Créez un compte sur Roomie.",
+		},
+	],
+});
 
-const fullName = ref('')
-const email = ref('')
-const password = ref('')
-const errorMessage = ref(null)
-const errorDetails = ref([])
-const isLoading = ref(false)
-const router = useRouter()
+const error = ref("");
+
+const fullName = ref("");
+const email = ref("");
+const password = ref("");
+
+const router = useRouter();
 
 const register = async () => {
-  errorMessage.value = ""
-  errorDetails.value = []
-  isLoading.value = true
-
-  try {
-    const response = await fetch("http://localhost:5184/api/Auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName: fullName.value.trim(),
-        email: email.value.trim(),
-        password: password.value,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Erreur API :", errorData)
-      
-      errorMessage.value = errorData.message || "Une erreur est survenue."
-      errorDetails.value = errorData.errors || [] // Affiche les erreurs détaillées
-
-      throw new Error(errorMessage.value)
-    }
-
-    console.log("Utilisateur créé avec succès !")
-    router.push("/login") // Redirige vers la connexion
-  } catch (error) {
-    console.error("Erreur d'inscription :", error.message)
-    errorMessage.value = error.message
-  } finally {
-    isLoading.value = false
-  }
+	try {
+		const result = await $fetch("http://localhost:5184/api/Auth/register", {
+			method: "POST",
+			body: {
+				fullName: fullName.value.trim(),
+				email: email.value.trim(),
+				password: password.value,
+			},
+		});
+		router.push("/login");
+	} catch (e) {
+		error.value = e;
+	}
 };
 </script>

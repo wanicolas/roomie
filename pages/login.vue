@@ -24,8 +24,6 @@
 			</NuxtLink>
 		</p>
 	</div>
-
-	<p v-if="error" class="text-red-600 dark:text-red-400">{{ error }}</p>
 </template>
 
 <script setup>
@@ -39,24 +37,22 @@ useHead({
 	],
 });
 
+const router = useRouter();
+const authCookie = useCookie("auth_token");
+
 const email = ref("");
 const password = ref("");
 
-const login = async () => {
-	const {
-		data: auth_token,
-		error,
-		status,
-	} = await $fetch("http://localhost:5184/api/Auth/login", {
-		body: JSON.stringify({
+async function login() {
+	const result = await $fetch("http://localhost:5184/api/Auth/login", {
+		method: "POST",
+		body: {
 			email: email.value,
 			password: password.value,
-		}),
+		},
 	});
 
-	if (!error) {
-		useCookie("auth_token", auth_token);
-		router.push("/book");
-	}
-};
+	authCookie.value = result;
+	router.push("/book");
+}
 </script>

@@ -68,54 +68,60 @@
 				</fieldset>
 			</details>
 
-			<UButton type="submit" block>Rechercher</UButton>
+			<UButton type="submit" block>Rechercher des salles disponibles</UButton>
 		</UForm>
 	</div>
 
 	<div class="bg-gray-100 px-3 py-20 dark:bg-gray-800">
-		<div
-			v-if="status === 'pending'"
-			class="flex items-center justify-center gap-2"
-		>
-			<UIcon name="ph:circle-notch" class="size-12 animate-spin" />
-			<p>Salles en cours de chargement</p>
-		</div>
-		<div v-else-if="error">
-			<p class="text-center text-gray-600 dark:text-gray-300">{{ error }}</p>
-		</div>
-		<div
-			v-else-if="rooms"
-			class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
-		>
-			<NuxtLink
-				:to="`/room/${room.id}?date=${availabilityDate}&startHour=${availabilityStartHour}&endHour=${availabilityEndHour}`"
-				v-for="room in rooms"
-				:key="room.id"
+		<p v-if="!showRooms" class="text-center text-lg">
+			Faites une recherche pour consulter les salles disponibles !
+		</p>
+		<template v-else>
+			<div
+				v-if="status === 'pending'"
+				class="flex items-center justify-center gap-2"
 			>
-				<div
-					class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
+				<UIcon name="ph:circle-notch" class="size-12 animate-spin" />
+				<p>Salles en cours de chargement</p>
+			</div>
+			<div v-else-if="error">
+				<p class="text-center text-gray-600 dark:text-gray-300">{{ error }}</p>
+			</div>
+			<div
+				v-else-if="rooms"
+				class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
+			>
+				<NuxtLink
+					:to="`/room/${room.id}?date=${availabilityDate}&startHour=${availabilityStartHour}&endHour=${availabilityEndHour}`"
+					v-for="room in rooms"
+					:key="room.id"
 				>
-					<img class="h-60 w-full object-cover" src="/room.webp" alt="" />
-					<div class="flex items-baseline justify-between p-3">
-						<div>
-							<div class="text-xl font-medium">{{ room.name }}</div>
-							<div class="flex items-center gap-1.5">
-								<UIcon name="ph:stairs" class="size-5" />
-								<div class="text-gray-600 dark:text-gray-300">
-									Étage {{ room.floor }}, {{ room.building }}
+					<div
+						class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
+					>
+						<img class="h-60 w-full object-cover" src="/room.webp" alt="" />
+						<div class="flex items-baseline justify-between p-3">
+							<div>
+								<div class="text-xl font-medium">{{ room.name }}</div>
+								<div class="flex items-center gap-1.5">
+									<UIcon name="ph:stairs" class="size-5" />
+									<div class="text-gray-600 dark:text-gray-300">
+										Étage {{ room.floor }}, {{ room.building }}
+									</div>
 								</div>
 							</div>
-						</div>
-						<div
-							class="flex items-center gap-1.5 text-gray-700 dark:text-gray-200"
-						>
-							{{ room.capacity }} <UIcon name="ph:users-three" class="size-5" />
+							<div
+								class="flex items-center gap-1.5 text-gray-700 dark:text-gray-200"
+							>
+								{{ room.capacity }}
+								<UIcon name="ph:users-three" class="size-5" />
+							</div>
 						</div>
 					</div>
-				</div>
-			</NuxtLink>
-		</div>
-		<div v-else-if="rooms.length === 0">Pas de salles trouvées.</div>
+				</NuxtLink>
+			</div>
+			<div v-else-if="rooms.length === 0">Pas de salles trouvées.</div>
+		</template>
 	</div>
 </template>
 
@@ -129,6 +135,12 @@ useHead({
 		},
 	],
 });
+
+definePageMeta({
+	middleware: "auth",
+});
+
+const showRooms = ref(false);
 
 const availabilityDate = ref("");
 const availabilityStartHour = ref("");
@@ -158,5 +170,7 @@ const onSubmit = async () => {
 	} = await useFetch(
 		`http://localhost:5184/api/Room?${new URLSearchParams(query).toString()}`,
 	);
+
+	showRooms.value = true;
 };
 </script>

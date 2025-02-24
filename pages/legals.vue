@@ -22,7 +22,8 @@
 		<h2>5. Cookies</h2>
 		<p>
 			Ce site utilise des cookies pour améliorer l'expérience utilisateur. Vous
-			pouvez
+			pouvez les désactiver dans les paramètres de votre navigateur au détriment
+			de l'expérience utilisateur et de certaines fonctionnalités.
 		</p>
 	</div>
 </template>
