@@ -5,13 +5,67 @@ using Microsoft.IdentityModel.Tokens;
 using Roomie.Backend.Data;
 using Roomie.Backend.Models;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Remplacer les deux configurations CORS par une seule
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder
+            .WithOrigins(
+                "http://localhost:3000",
+                "http://localhost:5184"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
 
 // Ajouter les services MVC
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Roomie API",
+        Version = "v1",
+        Description = "API pour la gestion des salles et réservations"
+    });
+
+    // Définition de la sécurité JWT
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Entrez 'Bearer' [espace] et votre token. Exemple: 'Bearer 12345abcdef'"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 // Ajouter la connexion SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -40,46 +94,57 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-// Configuration de JWT
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secret = jwtSettings["Secret"];
-if (string.IsNullOrEmpty(secret))
+// Configuration JWT
+builder.Services.AddAuthentication(options =>
 {
-    throw new Exception("La clé secrète JWT est manquante dans appsettings.json !");
-}
-var key = Encoding.UTF8.GetBytes(secret);
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = async context =>
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            ClockSkew = TimeSpan.Zero
-        };
-    });
+            var logger = context.HttpContext.RequestServices
+                .GetRequiredService<ILogger<Program>>();
+            
+            logger.LogInformation("Token validé pour l'utilisateur: {user}", 
+                context.Principal?.Identity?.Name);
+            
+            foreach (var claim in context.Principal?.Claims ?? Enumerable.Empty<Claim>())
+            {
+                logger.LogInformation("Claim dans le token - Type: {type}, Value: {value}", 
+                    claim.Type, claim.Value);
+            }
+        },
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices
+                .GetRequiredService<ILogger<Program>>();
+            
+            logger.LogError("Échec de l'authentification: {error}", 
+                context.Exception.Message);
+            
+            return Task.CompletedTask;
+        }
+    };
+});
 
 builder.Services.AddAuthorization();
-
-// Configuration CORS pour Nuxt.js
-var corsPolicyName = "AllowNuxt";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(corsPolicyName, policy =>
-    {
-        policy.WithOrigins("http://localhost:3000") // Mets l'URL de ton front
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials(); // IMPORTANT pour que les tokens JWT soient envoyés
-    });
-});
 
 var app = builder.Build();
 
@@ -123,11 +188,19 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Middleware
-app.UseCors(corsPolicyName);
 app.UseHttpsRedirection();
+
+// Ajouter UseCors() juste avant UseAuthentication
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
+// Afficher la configuration au démarrage
+Console.WriteLine($"JWT Issuer: {app.Configuration["Jwt:Issuer"]}");
+Console.WriteLine($"JWT Audience: {app.Configuration["Jwt:Audience"]}");
+Console.WriteLine($"JWT Key length: {app.Configuration["Jwt:Key"]?.Length ?? 0}");
 
 app.Run();
 

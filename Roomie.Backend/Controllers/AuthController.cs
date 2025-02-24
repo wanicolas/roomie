@@ -14,14 +14,15 @@ namespace Roomie.Backend.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _roleManager = roleManager;
             _configuration = configuration;
         }
 
@@ -52,18 +53,11 @@ namespace Roomie.Backend.Controllers
                 }
 
                 // Vérifier si le rôle "User" existe, sinon le créer
-                var roleExists = await _roleManager.RoleExistsAsync("User");
+                var roleExists = await _userManager.IsInRoleAsync(user, "User");
                 if (!roleExists)
                 {
-                    var roleResult = await _roleManager.CreateAsync(new IdentityRole("User"));
-                    if (!roleResult.Succeeded)
-                    {
-                        return StatusCode(500, new { message = "Erreur lors de la création du rôle 'User'." });
-                    }
+                    await _userManager.AddToRoleAsync(user, "User");
                 }
-
-                // Assigner le rôle "User" au nouvel utilisateur
-                await _userManager.AddToRoleAsync(user, "User");
 
                 return Ok(new { message = "Utilisateur enregistré avec succès !" });
             }
@@ -77,50 +71,70 @@ namespace Roomie.Backend.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    return Unauthorized(new { message = "Email ou mot de passe incorrect" });
+                }
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-                return Unauthorized(new { message = "Email ou mot de passe incorrect." });
+                var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                if (!result.Succeeded)
+                {
+                    return Unauthorized(new { message = "Email ou mot de passe incorrect" });
+                }
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-            if (!result.Succeeded)
-                return Unauthorized(new { message = "Email ou mot de passe incorrect." });
+                var roles = await _userManager.GetRolesAsync(user);
+                
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
+                };
 
-            // Génération du token JWT
-            var token = await GenerateJwtToken(user);
-            
-            return Ok(new { Token = token });
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not found")));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Issuer"],
+                    audience: _configuration["Jwt:Audience"],
+                    claims: claims,
+                    expires: DateTime.Now.AddDays(30),
+                    signingCredentials: creds
+                );
+
+                // Utiliser Append au lieu de Add pour les headers CORS
+                Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
+                Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    roles = roles,
+                    userId = user.Id,
+                    email = user.Email
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
-        private async Task<string> GenerateJwtToken(ApplicationUser user)
+        [HttpOptions("login")]
+        public IActionResult PreflightRoute()
         {
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName!),
-                new Claim(ClaimTypes.Email, user.Email!)
-            };
-
-            // Ajouter les rôles de l'utilisateur
-            var userRoles = await _userManager.GetRolesAsync(user);
-            foreach (var role in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JwtSettings:Issuer"],
-                audience: _configuration["JwtSettings:Audience"],
-                expires: DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["JwtSettings:TokenExpiryHours"]!)),
-                signingCredentials: creds,
-                claims: authClaims
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
+            Response.Headers.Append("Access-Control-Allow-Methods", "POST, OPTIONS");
+            Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+            return Ok();
         }
     }
 }
