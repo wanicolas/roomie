@@ -211,6 +211,42 @@ namespace Roomie.Backend.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "user1",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "3c2b8c93-6c57-417c-809a-1bf42b61e48e",
+                            Email = "user1@example.com",
+                            EmailConfirmed = false,
+                            FullName = "",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "USER1@EXAMPLE.COM",
+                            NormalizedUserName = "USER1@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHI2kaaAgun2/nU3afcd0+bExPEjcGFs/VfGViT8QHkuU9fulSwIAV2ngKsfH/0hfQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "90a7e177-3b9e-4966-8ed0-0f0f8b2b0b3f",
+                            TwoFactorEnabled = false,
+                            UserName = "user1@example.com"
+                        },
+                        new
+                        {
+                            Id = "user2",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "0805edb9-e661-4732-80d4-9971f54048e9",
+                            Email = "user2@example.com",
+                            EmailConfirmed = false,
+                            FullName = "",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "USER2@EXAMPLE.COM",
+                            NormalizedUserName = "USER2@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP0rEgfpUQe9ym/2XQ7gHN+blH4Hc4tpRqC5DYZeLLl6j4Rrk/ue97d+ehl4sP911Q==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "636d088b-4fa1-4671-a7ed-4ddb185f69d4",
+                            TwoFactorEnabled = false,
+                            UserName = "user2@example.com"
+                        });
                 });
 
             modelBuilder.Entity("Roomie.Backend.Models.Booking", b =>
@@ -270,17 +306,17 @@ namespace Roomie.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            EndTime = new DateTime(2025, 2, 25, 16, 13, 45, 972, DateTimeKind.Local).AddTicks(7430),
+                            EndTime = new DateTime(2025, 2, 25, 17, 27, 55, 70, DateTimeKind.Local).AddTicks(8940),
                             RoomId = 1,
-                            StartTime = new DateTime(2025, 2, 25, 14, 13, 45, 972, DateTimeKind.Local).AddTicks(7390),
+                            StartTime = new DateTime(2025, 2, 25, 15, 27, 55, 70, DateTimeKind.Local).AddTicks(8870),
                             UserId = "user1"
                         },
                         new
                         {
                             Id = 2,
-                            EndTime = new DateTime(2025, 2, 26, 15, 13, 45, 972, DateTimeKind.Local).AddTicks(7440),
+                            EndTime = new DateTime(2025, 2, 26, 16, 27, 55, 70, DateTimeKind.Local).AddTicks(8950),
                             RoomId = 2,
-                            StartTime = new DateTime(2025, 2, 26, 12, 13, 45, 972, DateTimeKind.Local).AddTicks(7430),
+                            StartTime = new DateTime(2025, 2, 26, 13, 27, 55, 70, DateTimeKind.Local).AddTicks(8950),
                             UserId = "user2"
                         });
                 });

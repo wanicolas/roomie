@@ -33,7 +33,6 @@ namespace Roomie.Backend.Migrations
                 defaultValue: new TimeOnly(0, 0, 0));
 
             migrationBuilder.AddColumn<string>(
-                name: "Building",
                 table: "Rooms",
                 type: "TEXT",
                 nullable: false,
@@ -76,7 +75,6 @@ namespace Roomie.Backend.Migrations
                 table: "Rooms");
 
             migrationBuilder.DropColumn(
-                name: "Building",
                 table: "Rooms");
 
             migrationBuilder.DropColumn(

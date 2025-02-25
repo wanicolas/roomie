@@ -263,10 +263,6 @@ namespace Roomie.Backend.Migrations
                     b.Property<TimeOnly>("AvailableStartTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Building")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Capacity")
                         .HasColumnType("INTEGER");
 
@@ -299,7 +295,6 @@ namespace Roomie.Backend.Migrations
                             AvailableDate = new DateOnly(1, 1, 1),
                             AvailableEndTime = new TimeOnly(0, 0, 0),
                             AvailableStartTime = new TimeOnly(0, 0, 0),
-                            Building = "",
                             Capacity = 20,
                             Equipments = "Vidéoprojecteur, Enceintes",
                             MinSeatingCapacity = 0,
@@ -313,7 +308,6 @@ namespace Roomie.Backend.Migrations
                             AvailableDate = new DateOnly(1, 1, 1),
                             AvailableEndTime = new TimeOnly(0, 0, 0),
                             AvailableStartTime = new TimeOnly(0, 0, 0),
-                            Building = "",
                             Capacity = 50,
                             Equipments = "Vidéoprojecteur",
                             MinSeatingCapacity = 0,
@@ -327,7 +321,6 @@ namespace Roomie.Backend.Migrations
                             AvailableDate = new DateOnly(1, 1, 1),
                             AvailableEndTime = new TimeOnly(0, 0, 0),
                             AvailableStartTime = new TimeOnly(0, 0, 0),
-                            Building = "",
                             Capacity = 10,
                             Equipments = "Enceintes",
                             MinSeatingCapacity = 0,

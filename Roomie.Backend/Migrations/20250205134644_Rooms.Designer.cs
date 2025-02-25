@@ -38,10 +38,6 @@ namespace Roomie.Backend.Migrations
                     b.Property<TimeOnly>("AvailableStartTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Building")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Capacity")
                         .HasColumnType("INTEGER");
 

@@ -15,7 +15,7 @@ namespace Roomie.Backend.Migrations
         {
             migrationBuilder.InsertData(
                 table: "Rooms",
-                columns: new[] { "Id", "AccessiblePMR", "AvailableDate", "AvailableEndTime", "AvailableStartTime", "Building", "Capacity", "Equipments", "ImageUrl", "MinSeatingCapacity", "Name", "Surface" },
+                columns: new[] { "Id", "AccessiblePMR", "AvailableDate", "AvailableEndTime", "AvailableStartTime", "Capacity", "ImageUrl", "MinSeatingCapacity", "Name", "Surface" },
                 values: new object[,]
                 {
                     { 1, true, new DateOnly(1, 1, 1), new TimeOnly(0, 0, 0), new TimeOnly(0, 0, 0), "", 20, "Vidéoprojecteur, Enceintes", null, 0, "Salle Alpha", 0.0 },
