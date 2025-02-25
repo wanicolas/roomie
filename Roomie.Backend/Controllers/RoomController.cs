@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Roomie.Backend.Controllers
 {
@@ -28,13 +29,52 @@ namespace Roomie.Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
+        [SwaggerOperation(Summary = "Récupère les salles en fonction de critères de recherche")]
+        [SwaggerResponse(200, "Liste des salles disponibles", typeof(IEnumerable<Room>))]
+        [SwaggerResponse(404, "Aucune salle trouvée")]
+        public async Task<ActionResult<IEnumerable<Room>>> GetRooms(
+            [FromQuery] int? capacity,
+            [FromQuery] string? availableDate,
+            [FromQuery] string? availableStartTime,
+            [FromQuery] string? availableEndTime,
+            [FromQuery] int? surface,
+            [FromQuery] bool? accessiblePMR,
+            [FromQuery] string? equipments,
+            [FromQuery] int? minSeatingCapacity)
         {
-            var rooms = await _context.Rooms.ToListAsync();
-            if (rooms == null || !rooms.Any())
+            var query = _context.Rooms.AsQueryable();
+
+            if (capacity.HasValue)
+                query = query.Where(r => r.Capacity >= capacity.Value);
+
+            if (DateTime.TryParse(availableDate, out var parsedDate))
+				query = query.Where(r => r.AvailableDate == DateOnly.FromDateTime(parsedDate));
+
+			if (TimeOnly.TryParse(availableStartTime, out var parsedStartTime))
+				query = query.Where(r => r.AvailableStartTime <= parsedStartTime);
+
+			if (TimeOnly.TryParse(availableEndTime, out var parsedEndTime))
+				query = query.Where(r => r.AvailableEndTime >= parsedEndTime);
+				
+            if (surface.HasValue)
+                query = query.Where(r => r.Surface >= surface.Value);
+
+            if (accessiblePMR.HasValue)
+                query = query.Where(r => r.AccessiblePMR == accessiblePMR.Value);
+
+            if (!string.IsNullOrEmpty(equipments))
             {
-                return NotFound("Aucune salle disponible.");
+                var equipmentList = equipments.Split(',').Select(e => e.Trim()).ToList();
+                query = query.Where(r => equipmentList.All(eq => r.Equipments.Contains(eq)));
             }
+
+            if (minSeatingCapacity.HasValue)
+                query = query.Where(r => r.MinSeatingCapacity >= minSeatingCapacity.Value);
+
+            var rooms = await query.ToListAsync();
+
+            if (!rooms.Any())
+                return NotFound("Aucune salle ne correspond aux critères.");
 
             return Ok(rooms);
         }
@@ -43,12 +83,8 @@ namespace Roomie.Backend.Controllers
         public async Task<ActionResult<Room>> GetRoom(int id)
         {
             var room = await _context.Rooms.FindAsync(id);
-            
             if (room == null)
-            {
                 return NotFound($"Aucune salle trouvée avec l'ID {id}.");
-            }
-
             return Ok(room);
         }
 
@@ -61,7 +97,6 @@ namespace Roomie.Backend.Controllers
 
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
         }
 
@@ -90,38 +125,15 @@ namespace Roomie.Backend.Controllers
         {
             try
             {
-                _logger.LogInformation("User Identity: {identity}", User.Identity?.Name);
-                _logger.LogInformation("Is Authenticated: {auth}", User.Identity?.IsAuthenticated);
-
-                foreach (var claim in User.Claims)
-                {
-                    _logger.LogInformation("Claim Found - Type: {type}, Value: {value}", 
-                        claim.Type, claim.Value);
-                }
-
-                var isAdmin = User.Claims.Any(c => 
-                    c.Type == ClaimTypes.Role && 
-                    c.Value == "Admin");
-
-                if (!isAdmin)
-                {
-                    _logger.LogWarning("Utilisateur non admin");
-                    return Forbid();
-                }
-
                 var room = await _context.Rooms.FindAsync(id);
                 if (room == null)
-                {
                     return NotFound(new { message = "Salle non trouvée" });
-                }
 
                 var hasReservations = await _context.Reservations
                     .AnyAsync(r => r.RoomId == id);
 
                 if (hasReservations)
-                {
                     return BadRequest(new { message = "Impossible de supprimer une salle avec des réservations" });
-                }
 
                 _context.Rooms.Remove(room);
                 await _context.SaveChangesAsync();
