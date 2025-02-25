@@ -14,9 +14,6 @@ namespace Roomie.Backend.Data
                     {
                         Name = "Salle Alpha",
                         Capacity = 20,
-                        AvailableDate = DateOnly.FromDateTime(DateTime.Today),
-                        AvailableStartTime = new TimeOnly(9, 0),
-                        AvailableEndTime = new TimeOnly(17, 0),
                         Surface = 50.5,
                         AccessiblePMR = true,
                         Equipments = "Vidéoprojecteur,Enceintes",
@@ -27,9 +24,6 @@ namespace Roomie.Backend.Data
                     {
                         Name = "Salle Beta",
                         Capacity = 50,
-                        AvailableDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
-                        AvailableStartTime = new TimeOnly(8, 0),
-                        AvailableEndTime = new TimeOnly(20, 0),
                         Surface = 100.0,
                         AccessiblePMR = false,
                         Equipments = "Enceintes",

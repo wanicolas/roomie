@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔹 Configuration CORS
+// Configuration CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 🔹 Ajout des services MVC et Swagger
+// Ajout des services MVC et Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -62,11 +62,11 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// 🔹 Configuration de la base de données SQLite
+// Configuration de la base de données SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=roomie.db"));
 
-// 🔹 Configuration d'Identity
+// Configuration d'Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -74,7 +74,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// 🔹 Désactiver les redirections automatiques d'Identity
+// Désactiver les redirections automatiques d'Identity
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Events.OnRedirectToLogin = context =>
@@ -89,10 +89,11 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-// 🔹 Configuration JWT (⚠️ Vérifier que les valeurs existent dans appsettings.json)
-var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is missing");
-var jwtAudience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience is missing");
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
+// Configuration JWT
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtExpiryHours = builder.Configuration["JwtSettings:TokenExpiryHours"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -111,25 +112,54 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         options.Events = new JwtBearerEvents
         {
-            OnTokenValidated = async context =>
+            OnAuthenticationFailed = async context =>
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                logger.LogInformation("Token validé pour l'utilisateur: {user}", context.Principal?.Identity?.Name);
+                context.NoResult();
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync(context.Exception.Message);
             },
-            OnAuthenticationFailed = context =>
+            OnChallenge = context =>
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                logger.LogError("Échec de l'authentification: {error}", context.Exception.Message);
+                context.HandleResponse();
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "text/plain";
+                return context.Response.WriteAsync("Non autorisé. Token invalide ou expiré.");
+            },
+            OnMessageReceived = context =>
+            {
+                string authorization = context.Request.Headers["Authorization"];
+				Console.WriteLine("auth: " + authorization);
+                if (string.IsNullOrEmpty(authorization))
+                {
+                    context.NoResult();
+                    return Task.CompletedTask;
+                }
+
+                if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                    context.Token = authorization["Bearer ".Length..].Trim();
+
+                if (string.IsNullOrEmpty(context.Token))
+                {
+                    context.NoResult();
+                    return Task.CompletedTask;
+                }
+
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
                 return Task.CompletedTask;
             }
         };
     });
 
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// 🔹 Initialiser la base de données et ajouter un admin
+// Initialiser la base de données et ajouter un admin
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -143,14 +173,14 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// 🔹 Activer Swagger uniquement en mode développement
+// Activer Swagger uniquement en mode développement
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// 🔹 Initialiser la base de données et ajouter des rôles si besoin
+// Initialiser la base de données et ajouter des rôles si besoin
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -168,7 +198,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// 🔹 Middleware
+// Middleware
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
@@ -176,14 +206,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// 🔹 Vérification des configs (⚠️ Ne pas afficher la clé)
+// Vérification des configs
 Console.WriteLine($"JWT Issuer: {jwtIssuer}");
 Console.WriteLine($"JWT Audience: {jwtAudience}");
 Console.WriteLine($"JWT Key length: {jwtKey.Length} (ne pas afficher en prod)");
 
 app.Run();
 
-// 🔹 Méthode pour créer les rôles si ils n'existent pas
+// Méthode pour créer les rôles
 async Task CreateRoles(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
