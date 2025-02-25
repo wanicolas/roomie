@@ -7,7 +7,7 @@
 			{{ room.name }}
 		</h1>
 		
-		<p class="mb-4 text-lg">
+		<p v-if="route.query.date" class="mb-4 text-lg">
 			Salle-vous-plaît ?
 			<UButton size="xl">
 				Réserver cette salle le {{ route.query.date }} de
