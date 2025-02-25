@@ -234,8 +234,8 @@ namespace Roomie.Backend.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FullName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "user1", 0, "3c2b8c93-6c57-417c-809a-1bf42b61e48e", "user1@example.com", false, "", false, null, "USER1@EXAMPLE.COM", "USER1@EXAMPLE.COM", "AQAAAAIAAYagAAAAEHI2kaaAgun2/nU3afcd0+bExPEjcGFs/VfGViT8QHkuU9fulSwIAV2ngKsfH/0hfQ==", null, false, "90a7e177-3b9e-4966-8ed0-0f0f8b2b0b3f", false, "user1@example.com" },
-                    { "user2", 0, "0805edb9-e661-4732-80d4-9971f54048e9", "user2@example.com", false, "", false, null, "USER2@EXAMPLE.COM", "USER2@EXAMPLE.COM", "AQAAAAIAAYagAAAAEP0rEgfpUQe9ym/2XQ7gHN+blH4Hc4tpRqC5DYZeLLl6j4Rrk/ue97d+ehl4sP911Q==", null, false, "636d088b-4fa1-4671-a7ed-4ddb185f69d4", false, "user2@example.com" }
+                    { "user1", 0, "e84a0749-546e-4908-9f5c-068d9fb6b8b7", "user1@example.com", false, "", false, null, "USER1@EXAMPLE.COM", "USER1@EXAMPLE.COM", "AQAAAAIAAYagAAAAEM+VDwTxTqgsEdtgxu+VJY+5LIIfaL2YOryTj4XGgS6RFdFP0/kbE3TAoUQvgtD2KQ==", null, false, "5a3189a3-efa0-4b30-b189-3a62b69a808e", false, "user1@example.com" },
+                    { "user2", 0, "73cd2215-bb38-48b6-b43b-8b7643353b8b", "user2@example.com", false, "", false, null, "USER2@EXAMPLE.COM", "USER2@EXAMPLE.COM", "AQAAAAIAAYagAAAAEKlILuEOisDc6iPnOa1OVXhCIpjYxxcxKBiXjJK7pDJ2/MPPjSFi2DKaZb0Ahw5H7A==", null, false, "fa5d8723-c0ca-4421-88f4-2272a1a5d5bc", false, "user2@example.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -253,8 +253,8 @@ namespace Roomie.Backend.Migrations
                 columns: new[] { "Id", "EndTime", "RoomId", "StartTime", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 2, 25, 17, 27, 55, 70, DateTimeKind.Local).AddTicks(8940), 1, new DateTime(2025, 2, 25, 15, 27, 55, 70, DateTimeKind.Local).AddTicks(8870), "user1" },
-                    { 2, new DateTime(2025, 2, 26, 16, 27, 55, 70, DateTimeKind.Local).AddTicks(8950), 2, new DateTime(2025, 2, 26, 13, 27, 55, 70, DateTimeKind.Local).AddTicks(8950), "user2" }
+                    { 1, new DateTime(2025, 2, 25, 17, 34, 26, 556, DateTimeKind.Local).AddTicks(2270), 1, new DateTime(2025, 2, 25, 15, 34, 26, 556, DateTimeKind.Local).AddTicks(2230), "user1" },
+                    { 2, new DateTime(2025, 2, 26, 16, 34, 26, 556, DateTimeKind.Local).AddTicks(2270), 2, new DateTime(2025, 2, 26, 13, 34, 26, 556, DateTimeKind.Local).AddTicks(2270), "user2" }
                 });
 
             migrationBuilder.CreateIndex(

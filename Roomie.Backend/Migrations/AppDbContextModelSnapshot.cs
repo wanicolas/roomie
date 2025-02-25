@@ -217,16 +217,16 @@ namespace Roomie.Backend.Migrations
                         {
                             Id = "user1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3c2b8c93-6c57-417c-809a-1bf42b61e48e",
+                            ConcurrencyStamp = "e84a0749-546e-4908-9f5c-068d9fb6b8b7",
                             Email = "user1@example.com",
                             EmailConfirmed = false,
                             FullName = "",
                             LockoutEnabled = false,
                             NormalizedEmail = "USER1@EXAMPLE.COM",
                             NormalizedUserName = "USER1@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHI2kaaAgun2/nU3afcd0+bExPEjcGFs/VfGViT8QHkuU9fulSwIAV2ngKsfH/0hfQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM+VDwTxTqgsEdtgxu+VJY+5LIIfaL2YOryTj4XGgS6RFdFP0/kbE3TAoUQvgtD2KQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "90a7e177-3b9e-4966-8ed0-0f0f8b2b0b3f",
+                            SecurityStamp = "5a3189a3-efa0-4b30-b189-3a62b69a808e",
                             TwoFactorEnabled = false,
                             UserName = "user1@example.com"
                         },
@@ -234,16 +234,16 @@ namespace Roomie.Backend.Migrations
                         {
                             Id = "user2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0805edb9-e661-4732-80d4-9971f54048e9",
+                            ConcurrencyStamp = "73cd2215-bb38-48b6-b43b-8b7643353b8b",
                             Email = "user2@example.com",
                             EmailConfirmed = false,
                             FullName = "",
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP0rEgfpUQe9ym/2XQ7gHN+blH4Hc4tpRqC5DYZeLLl6j4Rrk/ue97d+ehl4sP911Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKlILuEOisDc6iPnOa1OVXhCIpjYxxcxKBiXjJK7pDJ2/MPPjSFi2DKaZb0Ahw5H7A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "636d088b-4fa1-4671-a7ed-4ddb185f69d4",
+                            SecurityStamp = "fa5d8723-c0ca-4421-88f4-2272a1a5d5bc",
                             TwoFactorEnabled = false,
                             UserName = "user2@example.com"
                         });
@@ -306,17 +306,17 @@ namespace Roomie.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            EndTime = new DateTime(2025, 2, 25, 17, 27, 55, 70, DateTimeKind.Local).AddTicks(8940),
+                            EndTime = new DateTime(2025, 2, 25, 17, 34, 26, 556, DateTimeKind.Local).AddTicks(2270),
                             RoomId = 1,
-                            StartTime = new DateTime(2025, 2, 25, 15, 27, 55, 70, DateTimeKind.Local).AddTicks(8870),
+                            StartTime = new DateTime(2025, 2, 25, 15, 34, 26, 556, DateTimeKind.Local).AddTicks(2230),
                             UserId = "user1"
                         },
                         new
                         {
                             Id = 2,
-                            EndTime = new DateTime(2025, 2, 26, 16, 27, 55, 70, DateTimeKind.Local).AddTicks(8950),
+                            EndTime = new DateTime(2025, 2, 26, 16, 34, 26, 556, DateTimeKind.Local).AddTicks(2270),
                             RoomId = 2,
-                            StartTime = new DateTime(2025, 2, 26, 13, 27, 55, 70, DateTimeKind.Local).AddTicks(8950),
+                            StartTime = new DateTime(2025, 2, 26, 13, 34, 26, 556, DateTimeKind.Local).AddTicks(2270),
                             UserId = "user2"
                         });
                 });
