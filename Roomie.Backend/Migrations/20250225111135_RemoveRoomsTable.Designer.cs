@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Roomie.Backend.Data;
 
@@ -10,9 +11,11 @@ using Roomie.Backend.Data;
 namespace Roomie.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250225111135_RemoveRoomsTable")]
+    partial class RemoveRoomsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -270,17 +273,17 @@ namespace Roomie.Backend.Migrations
                         new
                         {
                             Id = 1,
-                            EndTime = new DateTime(2025, 2, 25, 16, 13, 45, 972, DateTimeKind.Local).AddTicks(7430),
+                            EndTime = new DateTime(2025, 2, 25, 16, 11, 35, 300, DateTimeKind.Local).AddTicks(9320),
                             RoomId = 1,
-                            StartTime = new DateTime(2025, 2, 25, 14, 13, 45, 972, DateTimeKind.Local).AddTicks(7390),
+                            StartTime = new DateTime(2025, 2, 25, 14, 11, 35, 300, DateTimeKind.Local).AddTicks(9270),
                             UserId = "user1"
                         },
                         new
                         {
                             Id = 2,
-                            EndTime = new DateTime(2025, 2, 26, 15, 13, 45, 972, DateTimeKind.Local).AddTicks(7440),
+                            EndTime = new DateTime(2025, 2, 26, 15, 11, 35, 300, DateTimeKind.Local).AddTicks(9330),
                             RoomId = 2,
-                            StartTime = new DateTime(2025, 2, 26, 12, 13, 45, 972, DateTimeKind.Local).AddTicks(7430),
+                            StartTime = new DateTime(2025, 2, 26, 12, 11, 35, 300, DateTimeKind.Local).AddTicks(9320),
                             UserId = "user2"
                         });
                 });

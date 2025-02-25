@@ -16,7 +16,8 @@ namespace Roomie.Backend.Data
                         Capacity = 20,
                         Surface = 50.5,
                         AccessiblePMR = true,
-                        Equipments = "Vidéoprojecteur,Enceintes",
+                        HasProjector = true,
+                        HasSpeakers = true,
                         MinSeatingCapacity = 10,
                         ImageUrl = "https://source.unsplash.com/random/300x200?room"
                     },
@@ -26,7 +27,8 @@ namespace Roomie.Backend.Data
                         Capacity = 50,
                         Surface = 100.0,
                         AccessiblePMR = false,
-                        Equipments = "Enceintes",
+                        HasProjector = false,
+                        HasSpeakers = true,
                         MinSeatingCapacity = 25,
                         ImageUrl = "https://source.unsplash.com/random/300x200?conference"
                     }

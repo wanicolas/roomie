@@ -7,20 +7,12 @@ namespace Roomie.Backend.Models
         public int Capacity { get; set; }
         public double Surface { get; set; }
         public bool AccessiblePMR { get; set; }
-        public string Equipments { get; set; } = string.Empty; // Chaîne séparée par des virgules
         public int MinSeatingCapacity { get; set; }
         public string? ImageUrl { get; set; }  // Nouvelle propriété
+        public bool HasProjector { get; set; }
+        public bool HasSpeakers { get; set; }
 
         public List<Booking> Bookings { get; set; } = new List<Booking>(); // Liste des réservations
 
-        public List<string> GetEquipmentsList()
-        {
-            return Equipments.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
-        }
-
-        public void SetEquipmentsList(List<string> equipments)
-        {
-            Equipments = string.Join(",", equipments);
-        }
     }
 }

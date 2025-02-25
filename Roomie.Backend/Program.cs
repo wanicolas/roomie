@@ -36,13 +36,13 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API pour la gestion des salles et réservations"
     });
 
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
-        Name = "Authorization",
+        // Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
+        Scheme = "bearer",
+        // BearerFormat = "JWT",
+        // In = ParameterLocation.Header,
         Description = "Entrez 'Bearer' [espace] et votre token. Exemple: 'Bearer 12345abcdef'"
     });
 
@@ -54,7 +54,7 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Id = JwtBearerDefaults.AuthenticationScheme
                 }
             },
             Array.Empty<string>()
@@ -93,10 +93,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var jwtKey = builder.Configuration["Jwt:Key"];
-var jwtExpiryHours = builder.Configuration["JwtSettings:TokenExpiryHours"];
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication(config => {
+    config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -122,31 +124,32 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             OnChallenge = context =>
             {
                 context.HandleResponse();
-                context.Response.StatusCode = 401;
-                context.Response.ContentType = "text/plain";
-                return context.Response.WriteAsync("Non autorisé. Token invalide ou expiré.");
-            },
-            OnMessageReceived = context =>
-            {
-                string authorization = context.Request.Headers["Authorization"];
-				Console.WriteLine("auth: " + authorization);
-                if (string.IsNullOrEmpty(authorization))
-                {
-                    context.NoResult();
-                    return Task.CompletedTask;
-                }
-
-                if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                    context.Token = authorization["Bearer ".Length..].Trim();
-
-                if (string.IsNullOrEmpty(context.Token))
-                {
-                    context.NoResult();
-                    return Task.CompletedTask;
-                }
-
+              //  context.Response.StatusCode = 401;
+               // context.Response.ContentType = "text/plain";
                 return Task.CompletedTask;
             },
+            // OnMessageReceived = context =>
+            // {
+            //     string authorization = context.Request.Headers["Authorization"];
+			// 	Console.WriteLine("auth: " + authorization);
+            //     if (string.IsNullOrEmpty(authorization))
+            //     {
+            //         context.NoResult();
+            //         return Task.CompletedTask;
+            //     }
+
+            //     if (authorization.StartsWith(JwtBearerDefaults.AuthenticationScheme + " ", StringComparison.OrdinalIgnoreCase))
+            //         context.Token = authorization[(JwtBearerDefaults.AuthenticationScheme + " ").Length..].Trim();
+
+            //     if (string.IsNullOrEmpty(context.Token))
+            //     {
+            //         context.NoResult();
+            //         return Task.CompletedTask;
+            //     }
+			// 	Console.WriteLine("auth: " + context.Token);
+
+            //     return Task.CompletedTask;
+            // },
             OnTokenValidated = context =>
             {
                 return Task.CompletedTask;

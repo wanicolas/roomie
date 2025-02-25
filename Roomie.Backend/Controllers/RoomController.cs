@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Roomie.Backend.Controllers
 {
@@ -37,7 +38,8 @@ namespace Roomie.Backend.Controllers
             [FromQuery] TimeOnly? endTime,
             [FromQuery] int? surface,
             [FromQuery] bool? accessiblePMR,
-            [FromQuery] string? equipments,
+            [FromQuery] bool? hasProjector,  
+            [FromQuery] bool? hasSpeakers,   
             [FromQuery] int? minSeatingCapacity)
         {
             var query = _context.Rooms.AsQueryable();
@@ -51,11 +53,11 @@ namespace Roomie.Backend.Controllers
             if (accessiblePMR.HasValue)
                 query = query.Where(r => r.AccessiblePMR == accessiblePMR.Value);
 
-            if (!string.IsNullOrEmpty(equipments))
-            {
-                var equipmentList = equipments.Split(',').Select(e => e.Trim()).ToList();
-                query = query.Where(r => equipmentList.All(eq => r.Equipments.Contains(eq)));
-            }
+            if (hasProjector.HasValue)
+                query = query.Where(r => r.HasProjector == hasProjector.Value);
+
+            if (hasSpeakers.HasValue)
+                query = query.Where(r => r.HasSpeakers == hasSpeakers.Value);
 
             if (minSeatingCapacity.HasValue)
                 query = query.Where(r => r.MinSeatingCapacity >= minSeatingCapacity.Value);
@@ -63,12 +65,14 @@ namespace Roomie.Backend.Controllers
             // Vérification des disponibilités basées sur les réservations
             if (date.HasValue && startTime.HasValue && endTime.HasValue)
             {
+var startDateTime = date.Value.Date + startTime.Value.ToTimeSpan();
+var endDateTime = date.Value.Date + endTime.Value.ToTimeSpan();
+
 var unavailableRoomIds = await _context.Reservations
-    .Where(res => res.StartTime.Date == date.Value.Date &&
-                  res.StartTime < date.Value.Date.Add(endTime.Value.ToTimeSpan()) &&
-                  res.EndTime > date.Value.Date.Add(startTime.Value.ToTimeSpan()))
+    .Where(res => res.StartTime < endDateTime && res.EndTime > startDateTime)
     .Select(res => res.RoomId)
     .ToListAsync();
+
                 
                 query = query.Where(r => !unavailableRoomIds.Contains(r.Id));
             }
@@ -113,15 +117,17 @@ var unavailableRoomIds = await _context.Reservations
             room.Capacity = updatedRoom.Capacity;
             room.Surface = updatedRoom.Surface;
             room.AccessiblePMR = updatedRoom.AccessiblePMR;
-            room.Equipments = updatedRoom.Equipments;
             room.MinSeatingCapacity = updatedRoom.MinSeatingCapacity;
+room.HasProjector = updatedRoom.HasProjector;
+room.HasSpeakers = updatedRoom.HasSpeakers;
 
             await _context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+
         public async Task<IActionResult> DeleteRoom(int id)
         {
             var room = await _context.Rooms.FindAsync(id);

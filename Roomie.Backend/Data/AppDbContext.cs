@@ -16,9 +16,9 @@ namespace Roomie.Backend.Data
 
             // Seed des salles
             modelBuilder.Entity<Room>().HasData(
-                new Room { Id = 1, Name = "Salle Alpha", Capacity = 20, AccessiblePMR = true, Equipments = "Vidéoprojecteur, Enceintes" },
-                new Room { Id = 2, Name = "Salle Beta", Capacity = 50, AccessiblePMR = false, Equipments = "Vidéoprojecteur" },
-                new Room { Id = 3, Name = "Salle Gamma", Capacity = 10, AccessiblePMR = true, Equipments = "Enceintes" }
+                new Room { Id = 1, Name = "Salle Alpha", Capacity = 20, AccessiblePMR = true },
+                new Room { Id = 2, Name = "Salle Beta", Capacity = 50, AccessiblePMR = false },
+                new Room { Id = 3, Name = "Salle Gamma", Capacity = 10, AccessiblePMR = true }
             );
             modelBuilder.Entity<Reservation>().HasData(
                 new Reservation { Id = 1, UserId = "user1", RoomId = 1, StartTime = DateTime.Now.AddHours(2), EndTime = DateTime.Now.AddHours(4) },
