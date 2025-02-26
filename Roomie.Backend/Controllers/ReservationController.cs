@@ -108,7 +108,7 @@ namespace Roomie.Backend.Controllers
             return NoContent();
         }
 
-        [HttpGet("export")]
+        [HttpGet("export-csv")]
         public async Task<IActionResult> ExportReservations()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
