@@ -23,6 +23,7 @@ namespace Roomie.Backend.Controllers
         public async Task<IActionResult> CreateReservation([FromBody] Reservation reservation)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine(userId);
 
             if (userId == null)
                 return Unauthorized("Utilisateur non authentifié.");
@@ -30,7 +31,7 @@ namespace Roomie.Backend.Controllers
             reservation.UserId = userId;
 
             // Vérifier si la salle est dispo
-            bool isRoomAvailable = !_context.Reservations.Any(r =>
+            bool isRoomAvailable = !await _context.Reservations.AnyAsync(r =>
                 r.RoomId == reservation.RoomId &&
                 ((reservation.StartTime >= r.StartTime && reservation.StartTime < r.EndTime) ||
                  (reservation.EndTime > r.StartTime && reservation.EndTime <= r.EndTime))
@@ -49,8 +50,9 @@ namespace Roomie.Backend.Controllers
         public async Task<IActionResult> GetReservation(int id)
         {
             var reservation = await _context.Reservations
+                .Include(r => r.User)
                 .Include(r => r.Room)
-                .FirstOrDefaultAsync(r => r.Id == id);
+                .FirstOrDefaultAsync(r => r.Id == id); // Correction ici
 
             if (reservation == null)
                 return NotFound();
