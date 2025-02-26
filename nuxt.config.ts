@@ -8,6 +8,7 @@ export default defineNuxtConfig({
 		rootAttrs: {
 			class: "min-h-dvh flex flex-col",
 		},
+		pageTransition: { name: "page", mode: "out-in" },
 	},
 	tailwindcss: {
 		config: {

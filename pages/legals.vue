@@ -1,5 +1,5 @@
 <template>
-	<div class="prose dark:prose-invert mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
+	<div class="prose dark:prose-invert">
 		<h1>Mentions Légales</h1>
 		<h2>1. Éditeur du site</h2>
 		<p>

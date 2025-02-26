@@ -1,47 +1,48 @@
 <template>
-	<h1 class="m-3 mb-6 max-w-screen-xl text-2xl font-semibold xl:mx-auto">
-		Ajouter une salle
-	</h1>
-	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
-		<UForm @submit="addRoom" class="flex flex-col gap-3">
-			<UFormGroup label="Nom de la salle">
-				<UInput required icon="ph:door" v-model="name" />
-			</UFormGroup>
-			<UFormGroup label="Capacité en nombre de personnes">
-				<UInput
-					type="number"
-					min="1"
-					icon="ph:users-three"
-					v-model="capacity"
-				/>
-			</UFormGroup>
-			<UFormGroup label="Nombre de sièges minimum">
-				<UInput
-					type="number"
-					min="1"
-					icon="ph:chair"
-					v-model="minSeatingCapacity"
-				/>
-			</UFormGroup>
-			<UFormGroup label="Surface en m²">
-				<UInput
-					type="number"
-					min="1"
-					icon="ph:office-chair"
-					v-model="surface"
-				/>
-			</UFormGroup>
-			<UCheckbox label="Accessible aux PMR" v-model="accessiblePMR" />
-			<fieldset>
-				<legend class="mb-1 text-sm font-medium">
-					Équipements disponibles :
-				</legend>
-				<UCheckbox label="Vidéoprojecteur" v-model="hasProjector" />
-				<UCheckbox label="Enceintes" v-model="hasSpeakers" />
-			</fieldset>
-
-			<UButton type="submit" block>Ajouter la salle</UButton>
-		</UForm>
+	<div>
+		<h1 class="m-3 mb-6 max-w-screen-xl text-2xl font-semibold xl:mx-auto">
+			Ajouter une salle
+		</h1>
+		<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
+			<UForm @submit="addRoom" class="flex flex-col gap-3">
+				<UFormGroup label="Nom de la salle">
+					<UInput required icon="ph:door" v-model="name" />
+				</UFormGroup>
+				<UFormGroup label="Capacité en nombre de personnes">
+					<UInput
+						type="number"
+						min="1"
+						icon="ph:users-three"
+						v-model="capacity"
+					/>
+				</UFormGroup>
+				<UFormGroup label="Nombre de sièges minimum">
+					<UInput
+						type="number"
+						min="1"
+						icon="ph:chair"
+						v-model="minSeatingCapacity"
+					/>
+				</UFormGroup>
+				<UFormGroup label="Surface en m²">
+					<UInput
+						type="number"
+						min="1"
+						icon="ph:office-chair"
+						v-model="surface"
+					/>
+				</UFormGroup>
+				<UCheckbox label="Accessible aux PMR" v-model="accessiblePMR" />
+				<fieldset>
+					<legend class="mb-1 text-sm font-medium">
+						Équipements disponibles :
+					</legend>
+					<UCheckbox label="Vidéoprojecteur" v-model="hasProjector" />
+					<UCheckbox label="Enceintes" v-model="hasSpeakers" />
+				</fieldset>
+				<UButton type="submit" block>Ajouter la salle</UButton>
+			</UForm>
+		</div>
 	</div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-	<div class="mx-4 max-w-screen-xl md:mx-12 xl:mx-auto">
+	<div class="mx-4">
 		<h1 class="mb-8 text-center text-3xl font-semibold md:text-7xl">
 			Optimisez la gestion <br />
 			de réservation de vos salles
@@ -23,7 +23,7 @@
 			</NuxtLink>
 		</div>
 
-		<div class="mt-32 md:mx-auto md:max-w-screen-md">
+		<div class="mt-32">
 			<div class="mb-20 text-center">
 				<h2 class="mb-4 text-2xl font-semibold md:text-4xl">
 					Boostez votre productivité. <br />

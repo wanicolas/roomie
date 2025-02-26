@@ -1,5 +1,5 @@
 <template>
-	<div class="max-w-screen-xl p-3 xl:mx-auto">
+	<div>
 		<h1 class="mb-10 text-lg">
 			Bienvenue sur l'interface d'administration de Roomie. Ici, vous pouvez
 			modifier, ajouter ou supprimer les salles de votre organisation.

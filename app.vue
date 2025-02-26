@@ -4,10 +4,20 @@
 			Aller au contenu principal
 		</UButton>
 		<header
-			class="mb-20 flex w-full max-w-screen-xl items-center justify-between px-4 pt-6 md:mb-32 md:px-12 md:pt-8 lg:mb-40 xl:mx-auto"
+			class="mb-20 mt-6 flex w-full max-w-screen-xl items-center justify-between px-4 md:mb-32 md:mt-8 md:px-12 lg:mb-40 xl:mx-auto"
 		>
 			<Logo />
-			<nav class="flex items-center gap-6 md:gap-10">
+			<UButton
+				icon="ph:list"
+				color="gray"
+				class="z-20 md:hidden"
+				@click="showMobileMenu = !showMobileMenu"
+			>
+			</UButton>
+			<nav
+				class="fixed inset-0 z-10 flex flex-col items-center gap-6 bg-primary-500 pt-20 text-white md:relative md:flex-row md:gap-10 md:bg-transparent md:pt-0 md:text-current dark:bg-primary-300 dark:text-gray-900 md:dark:bg-transparent md:dark:text-current"
+				:class="!showMobileMenu && 'hidden md:flex'"
+			>
 				<NuxtLink to="/book" class="underline-offset-4 hover:underline">
 					Réserver
 				</NuxtLink>
@@ -27,7 +37,7 @@
 					@click="toggleColorMode"
 				>
 					<svg
-						class="size-5 fill-gray-900 dark:fill-white"
+						class="size-5 fill-current"
 						xmlns="http://www.w3.org/2000/svg"
 						width="24"
 						height="24"
@@ -50,7 +60,7 @@
 		</main>
 
 		<footer
-			class="mx-4 my-6 flex w-full max-w-screen-xl items-center justify-between md:mx-12 md:my-8 xl:mx-auto"
+			class="my-6 flex w-full max-w-screen-xl items-center justify-between px-4 text-xs md:my-8 md:px-12 md:text-base xl:mx-auto"
 		>
 			<Logo />
 			<nav class="flex items-center gap-6 md:gap-10">
@@ -89,6 +99,8 @@ const logout = () => {
 	useCookie("auth_token").value = "";
 	router.push("/login");
 };
+
+const showMobileMenu = ref(false);
 </script>
 
 <style>

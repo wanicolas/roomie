@@ -1,44 +1,43 @@
 <template>
-	<h1 class="mb-6 text-center text-2xl font-semibold md:mb-12 md:text-4xl">
-		Inscription
-	</h1>
-	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
-		<UForm @submit.prevent="register" class="mb-6">
-			<UFormGroup label="Entrez votre nom" class="mb-3">
-				<UInput v-model="fullName" required icon="ph:user" />
-			</UFormGroup>
-			<UFormGroup label="Entrez votre email" class="mb-3">
-				<UInput v-model="email" type="email" required icon="ph:envelope" />
-			</UFormGroup>
-			<UFormGroup
-				help="Le mot de passe doit contenir au moins 6 caractères dont un chiffre, une majuscule et un caractère spécial."
-				label="Créez un mot de passe"
-				class="mb-6"
-			>
-				<UInput
-					v-model="password"
-					type="password"
-					required
-					autocomplete="new-password"
-					pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$"
-					icon="ph:lock"
-				/>
-			</UFormGroup>
-
-			<UButton type="submit" block>Créer mon compte</UButton>
-		</UForm>
-
-		<p v-if="error">{{ error }}</p>
-
-		<p class="text-center">
-			Déjà membre ?
-			<NuxtLink
-				to="/login"
-				class="text-primary-700 underline-offset-4 hover:underline dark:text-primary-300"
-			>
-				On se connecte !
-			</NuxtLink>
-		</p>
+	<div>
+		<h1 class="mb-6 text-center text-2xl font-semibold md:mb-12 md:text-4xl">
+			Inscription
+		</h1>
+		<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
+			<UForm @submit.prevent="register" class="mb-6">
+				<UFormGroup label="Entrez votre nom" class="mb-3">
+					<UInput v-model="fullName" required icon="ph:user" />
+				</UFormGroup>
+				<UFormGroup label="Entrez votre email" class="mb-3">
+					<UInput v-model="email" type="email" required icon="ph:envelope" />
+				</UFormGroup>
+				<UFormGroup
+					help="Le mot de passe doit contenir au moins 6 caractères dont un chiffre, une majuscule et un caractère spécial."
+					label="Créez un mot de passe"
+					class="mb-6"
+				>
+					<UInput
+						v-model="password"
+						type="password"
+						required
+						autocomplete="new-password"
+						pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$"
+						icon="ph:lock"
+					/>
+				</UFormGroup>
+				<UButton type="submit" block>Créer mon compte</UButton>
+			</UForm>
+			<p v-if="error">{{ error }}</p>
+			<p class="text-center">
+				Déjà membre ?
+				<NuxtLink
+					to="/login"
+					class="text-primary-700 underline-offset-4 hover:underline dark:text-primary-300"
+				>
+					On se connecte !
+				</NuxtLink>
+			</p>
+		</div>
 	</div>
 </template>
 
