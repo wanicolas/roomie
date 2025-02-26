@@ -1,11 +1,8 @@
 <template>
 	<Body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
-		<NuxtLink
-			to="#content"
-			class="fixed -top-10 left-4 rounded-md bg-gray-900 px-2 py-1 text-white shadow-md focus:top-4 dark:bg-white dark:text-gray-900"
-		>
+		<UButton to="#content" class="fixed -top-10 left-4 z-10 focus:top-4">
 			Aller au contenu principal
-		</NuxtLink>
+		</UButton>
 		<header
 			class="mb-20 flex w-full max-w-screen-xl items-center justify-between px-4 pt-6 md:mb-32 md:px-12 md:pt-8 lg:mb-40 xl:mx-auto"
 		>
@@ -45,7 +42,10 @@
 			</nav>
 		</header>
 
-		<main id="content" class="grow">
+		<main
+			id="content"
+			class="w-full max-w-screen-xl grow px-4 md:px-12 xl:mx-auto"
+		>
 			<NuxtPage />
 		</main>
 

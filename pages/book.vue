@@ -75,9 +75,7 @@
 		<div v-if="error">
 			<p class="text-center text-gray-600 dark:text-gray-300">{{ error }}</p>
 		</div> -->
-		<div
-			class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
-		>
+		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 			<NuxtLink
 				:to="`/room/${room.id}?date=${availabilityDate}&startTime=${availabilityStartTime}&endTime=${availabilityEndTime}`"
 				v-for="room in rooms"
@@ -86,17 +84,13 @@
 				<div
 					class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
 				>
-					<img class="h-60 w-full object-cover" :src="room.imageUrl" alt="" />
+					<img
+						class="h-60 w-full object-cover"
+						src="https://images.unsplash.com/photo-1517502884422-41eaead166d4?q=80&w=2525&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+						alt=""
+					/>
 					<div class="flex items-baseline justify-between p-3">
-						<div>
-							<div class="text-xl font-medium">{{ room.name }}</div>
-							<!-- <div class="flex items-center gap-1.5">
-								<UIcon name="ph:stairs" class="size-5" />
-								<div class="text-gray-600 dark:text-gray-300">
-									Étage {{ room.floor }}, {{ room.building }}
-								</div>
-							</div> -->
-						</div>
+						<div class="text-xl font-medium">{{ room.name }}</div>
 						<div
 							class="flex items-center gap-1.5 text-gray-700 dark:text-gray-200"
 						>

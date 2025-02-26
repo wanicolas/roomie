@@ -11,7 +11,7 @@
 			Salle-vous-plaît ?
 			<UButton size="xl">
 				Réserver cette salle le {{ route.query.date }} de
-				{{ route.query.startHour }} à {{ route.query.endHour }}
+				{{ route.query.startTime }} à {{ route.query.endTime }}
 			</UButton>
 		</p>
 
@@ -43,9 +43,9 @@
 				</li>
 				<li class="flex items-center gap-2">
 					<UIcon
-						:name="room.hasSpeaker ? 'ph:check' : 'ph:x'"
+						:name="room.hasSpeakers ? 'ph:check' : 'ph:x'"
 						class="size-5"
-						:class="room.hasSpeaker ? 'text-green-600' : 'text-red-600'"
+						:class="room.hasSpeakers ? 'text-green-600' : 'text-red-600'"
 					/>
 					Enceintes
 				</li>
