@@ -53,8 +53,8 @@
 						<legend class="mb-1 text-sm font-medium">
 							Équipements disponibles :
 						</legend>
-						<UCheckbox label="Vidéoprojecteur" v-model="projector" />
-						<UCheckbox label="Enceintes" v-model="speaker" />
+						<UCheckbox label="Vidéoprojecteur" v-model="hasProjector" />
+						<UCheckbox label="Enceintes" v-model="hasSpeaker" />
 					</fieldset>
 				</details>
 				<UButton type="submit" block>Rechercher des salles disponibles</UButton>
@@ -122,20 +122,19 @@ const availabilityEndTime = ref("");
 const minSeatingCapacity = ref("");
 const surface = ref(null);
 const accessiblePMR = ref(false);
-const projector = ref(false);
-const speaker = ref(false);
+const hasProjector = ref(false);
+const hasSpeaker = ref(false);
 
 const fetchRooms = async () => {
-	// todo : add query to fetch rooms
 	const response = await $fetch("http://localhost:5184/api/Room", {
 		params: {
 			availableDate: availabilityDate.value,
 			availableStartTime: availabilityStartTime.value,
 			availableEndTime: availabilityEndTime.value,
 			minSeatingCapacity: minSeatingCapacity.value || undefined,
-			accessiblePMR: accessiblePMR.value,
-			projector: projector.value,
-			speaker: speaker.value,
+			accessiblePMR: accessiblePMR.value ? true : undefined,
+			hasProjector: hasProjector.value ? true : undefined,
+			hasSpeaker: hasSpeaker.value ? true : undefined,
 		},
 		headers: {
 			Authorization: `Bearer ${useCookie("auth_token").value.token}`,

@@ -16,6 +16,14 @@
 			<UButton @click="logout" color="red" class="mb-6" size="lg">
 				Déconnexion
 			</UButton>
+
+			<h2 class="m-3 mb-6 text-2xl font-semibold">Export des réservations</h2>
+
+			<div class="flex gap-3">
+				<UButton :to="exportCSV" color="gray"> Export .csv </UButton>
+				<UButton :to="exportICS" color="gray"> Export .ics </UButton>
+			</div>
+
 			<h2 class="m-3 mb-6 text-2xl font-semibold">
 				Historique des réservations
 			</h2>
@@ -23,24 +31,22 @@
 				v-for="booking in userBookings"
 				class="mb-6 rounded-lg border px-3 py-2"
 			>
-				<p class="mb-2 text-lg">
-					Salle :
-					<NuxtLink
-						:to="`/room/${booking.roomId}`"
-						class="underline underline-offset-4 hover:no-underline"
-					>
-						{{ booking.room.name }}
-					</NuxtLink>
-				</p>
-				<p>Date : {{ booking.startTime }}</p>
-				<p>heure de début : {{ booking.startTime }}</p>
-				<p>heure de fin : {{ booking.endTime }}</p>
-				<UButton
-					@click="deleteBooking"
-					color="red"
-					variant="outline"
-					class="mb-6"
-				>
+				<div class="mb-3">
+					<p class="mb-2 text-lg">
+						Salle :
+						<NuxtLink
+							:to="`/room/${booking.roomId}`"
+							class="underline underline-offset-4 hover:no-underline"
+						>
+							{{ booking.room.name }}
+						</NuxtLink>
+					</p>
+					<p>Date : {{ booking.startTime }}</p>
+					<p>heure de début : {{ booking.startTime }}</p>
+					<p>heure de fin : {{ booking.endTime }}</p>
+				</div>
+
+				<UButton @click="deleteBooking" color="red" variant="outline">
 					Supprimer la réservation
 				</UButton>
 			</div>
@@ -79,6 +85,24 @@ const {
 		Authorization: `Bearer ${useCookie("auth_token").value.token}`,
 	},
 });
+
+const { data: exportCSV } = await useFetch(
+	"http://localhost:5184/api/Reservation/export-csv",
+	{
+		headers: {
+			Authorization: `Bearer ${useCookie("auth_token").value.token}`,
+		},
+	},
+);
+
+const { data: exportICS } = await useFetch(
+	"http://localhost:5184/api/Reservation/export-cal",
+	{
+		headers: {
+			Authorization: `Bearer ${useCookie("auth_token").value.token}`,
+		},
+	},
+);
 
 const deleteBooking = async () => {
 	const response = await $fetch(
