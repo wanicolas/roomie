@@ -65,8 +65,8 @@ namespace Roomie.Backend.Controllers
             // Vérification des disponibilités basées sur les réservations
             if (date.HasValue && startTime.HasValue && endTime.HasValue)
             {
-var startDateTime = date.Value.Date + startTime.Value.ToTimeSpan();
-var endDateTime = date.Value.Date + endTime.Value.ToTimeSpan();
+            var startDateTime = date.Value.Date + startTime.Value.ToTimeSpan();
+            var endDateTime = date.Value.Date + endTime.Value.ToTimeSpan();
 
 var unavailableRoomIds = await _context.Reservations
     .Where(res => res.StartTime < endDateTime && res.EndTime > startDateTime)
@@ -100,30 +100,57 @@ var unavailableRoomIds = await _context.Reservations
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (string.IsNullOrWhiteSpace(room.Name))
+                return BadRequest(new { message = "Le nom de la salle est requis." });
+
+            if (room.Capacity <= 0 || room.Surface <= 0)
+                return BadRequest(new { message = "La capacité et la surface doivent être positives." });
+
+            if (room.MinSeatingCapacity > room.Capacity)
+                return BadRequest(new { message = "Le nombre de places assises minimum ne peut pas être supérieur à la capacité." });
+
+            room.Bookings = new List<Booking>(); // S'assurer que les réservations ne sont pas envoyées
+
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
         }
+
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRoom(int id, [FromBody] Room updatedRoom)
         {
+            if (updatedRoom == null)
+                return BadRequest(new { message = "Données invalides." });
+
             var room = await _context.Rooms.FindAsync(id);
             if (room == null)
-                return NotFound();
+                return NotFound(new { message = "Salle non trouvée." });
 
+            if (string.IsNullOrWhiteSpace(updatedRoom.Name))
+                return BadRequest(new { message = "Le nom de la salle est requis." });
+
+            if (updatedRoom.Capacity <= 0 || updatedRoom.Surface <= 0)
+                return BadRequest(new { message = "La capacité et la surface doivent être positives." });
+
+            if (updatedRoom.MinSeatingCapacity > updatedRoom.Capacity)
+                return BadRequest(new { message = "Le nombre de places assises minimum ne peut pas être supérieur à la capacité." });
+
+            // Mise à jour des propriétés
             room.Name = updatedRoom.Name;
             room.Capacity = updatedRoom.Capacity;
             room.Surface = updatedRoom.Surface;
             room.AccessiblePMR = updatedRoom.AccessiblePMR;
             room.MinSeatingCapacity = updatedRoom.MinSeatingCapacity;
-room.HasProjector = updatedRoom.HasProjector;
-room.HasSpeakers = updatedRoom.HasSpeakers;
+            room.HasProjector = updatedRoom.HasProjector;
+            room.HasSpeakers = updatedRoom.HasSpeakers;
 
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
 
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
