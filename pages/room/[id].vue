@@ -6,7 +6,7 @@
 		>
 			{{ room.name }}
 		</h1>
-		
+
 		<p v-if="route.query.date" class="mb-4 text-lg">
 			Salle-vous-plaît ?
 			<UButton size="xl">
@@ -15,7 +15,7 @@
 			</UButton>
 		</p>
 
-		<UCarousel
+		<!-- <UCarousel
 			v-slot="{ item }"
 			:items="items"
 			:ui="{ item: 'basis-full' }"
@@ -24,13 +24,11 @@
 			indicators
 		>
 			<img :src="item" class="w-full" draggable="false" />
-		</UCarousel>
+		</UCarousel> -->
 
+		<p class="mb-4">Nombre de places assises : {{ room.minSeatingCapacity }}</p>
 		<p class="mb-4">
-			Nombre de places assises : {{ room.seats }}
-		</p>
-		<p class="mb-4">
-			Accessibilité PMR : {{ room.isAccessible ? "Oui" : "Non" }}
+			Accessibilité PMR : {{ room.accessiblePMR ? "Oui" : "Non" }}
 		</p>
 		<div>
 			Équipements disponibles :
@@ -38,12 +36,17 @@
 				<li class="flex items-center gap-2">
 					<UIcon
 						:name="room.hasProjector ? 'ph:check' : 'ph:x'"
-						class="size-5" :class="room.hasProjector ? 'text-green-600' : 'text-red-600'"
+						class="size-5"
+						:class="room.hasProjector ? 'text-green-600' : 'text-red-600'"
 					/>
 					Vidéoprojecteur
 				</li>
 				<li class="flex items-center gap-2">
-					<UIcon :name="room.hasSpeaker ? 'ph:check' : 'ph:x'" class="size-5" :class="room.hasProjector ? 'text-green-600' : 'text-red-600'"" />
+					<UIcon
+						:name="room.hasSpeaker ? 'ph:check' : 'ph:x'"
+						class="size-5"
+						:class="room.hasSpeaker ? 'text-green-600' : 'text-red-600'"
+					/>
 					Enceintes
 				</li>
 			</ul>

@@ -4,24 +4,32 @@
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
 		<UForm @submit="updateRoom" class="flex flex-col gap-3">
+			<UFormGroup label="Nom de la salle">
+				<UInput required icon="ph:office-building" v-model="name" />
+			</UFormGroup>
 			<UFormGroup label="Capacité en nombre de personnes">
 				<UInput
 					type="number"
 					min="0"
 					icon="ph:users-three"
-					v-model="peopleCapacity"
+					v-model="minSeatingCapacity"
 				/>
 			</UFormGroup>
-			<UFormGroup label="Nombre de places assises minimum">
-				<UInput type="number" min="0" icon="ph:office-chair" v-model="seats" />
+			<UFormGroup label="Surface en m²">
+				<UInput
+					type="number"
+					min="0"
+					icon="ph:office-chair"
+					v-model="surface"
+				/>
 			</UFormGroup>
-			<UCheckbox label="Accessible aux PMR" v-model="accessible" />
+			<UCheckbox label="Accessible aux PMR" v-model="accessiblePMR" />
 			<fieldset>
 				<legend class="mb-1 text-sm font-medium">
 					Équipements disponibles :
 				</legend>
-				<UCheckbox label="Vidéoprojecteur" v-model="projector" />
-				<UCheckbox label="Enceintes" v-model="speaker" />
+				<UCheckbox label="Vidéoprojecteur" v-model="hasProjector" />
+				<UCheckbox label="Enceintes" v-model="hasSpeaker" />
 			</fieldset>
 
 			<UButton color="red" variant="outline" block>Supprimer la salle</UButton>
@@ -54,11 +62,12 @@ const {
 } = await useFetch(`http://localhost:5184/api/Room/${route.params.id}`);
 
 // todo : bind v-model to received data
-const peopleCapacity = ref("");
-const seats = ref("");
-const accessible = ref(false);
-const projector = ref(false);
-const speaker = ref(false);
+const name = ref("");
+const minSeatingCapacity = ref(null);
+const surface = ref(null);
+const accessiblePMR = ref(false);
+const hasProjector = ref(false);
+const hasSpeaker = ref(false);
 
 // todo : send data to the edit api
 async function updateRoom() {
@@ -67,11 +76,11 @@ async function updateRoom() {
 		{
 			method: "POST",
 			body: {
-				peopleCapacity: peopleCapacity.value,
-				seats: seats.value,
-				accessible: accessible.value,
-				projector: projector.value,
-				speaker: speaker.value,
+				minSeatingCapacity: minSeatingCapacity.value,
+				surface: surface.value,
+				accessiblePMR: accessiblePMR.value,
+				hasProjector: hasProjector.value,
+				hasSpeaker: hasSpeaker.value,
 			},
 		},
 	);

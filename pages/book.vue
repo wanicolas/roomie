@@ -3,7 +3,7 @@
 		Réserver une salle
 	</h1>
 	<div class="m-3 mb-12 sm:mx-auto sm:max-w-lg">
-		<UForm @submit="onSubmit" class="flex flex-col gap-3">
+		<UForm @submit="fetchRooms" class="flex flex-col gap-3">
 			<UFormGroup label="Date de disponibilité">
 				<UInput
 					required
@@ -17,7 +17,7 @@
 					required
 					type="time"
 					icon="ph:clock"
-					v-model="availabilityStartHour"
+					v-model="availabilityStartTime"
 				/>
 			</UFormGroup>
 			<UFormGroup label="Heure de fin">
@@ -25,11 +25,16 @@
 					required
 					type="time"
 					icon="ph:clock"
-					v-model="availabilityEndHour"
+					v-model="availabilityEndTime"
 				/>
 			</UFormGroup>
 			<UFormGroup label="Nombre de places assises minimum">
-				<UInput type="number" min="0" icon="ph:office-chair" v-model="seats" />
+				<UInput
+					type="number"
+					min="0"
+					icon="ph:office-chair"
+					v-model="minSeatingCapacity"
+				/>
 			</UFormGroup>
 
 			<details class="space-y-3">
@@ -39,9 +44,12 @@
 					Plus de filtres
 					<UIcon name="ph:caret-down" class="size-5" />
 				</summary>
+				<UFormGroup label="Surface minimale en m²">
+					<UInput type="number" min="0" v-model="surface" />
+				</UFormGroup>
 				<UCheckbox
 					label="Obligatoirement accessible aux PMR"
-					v-model="accessible"
+					v-model="accessiblePMR"
 				/>
 				<fieldset>
 					<legend class="mb-1 text-sm font-medium">
@@ -57,55 +65,48 @@
 	</div>
 
 	<div class="bg-gray-100 px-3 py-20 dark:bg-gray-800">
-		<p v-if="!showRooms" class="text-center text-lg">
+		<!-- <p v-if="rooms.length === 0" class="text-center text-lg">
 			Faites une recherche pour consulter les salles disponibles !
-		</p>
-		<template v-else>
-			<div
-				v-if="status === 'pending'"
-				class="flex items-center justify-center gap-2"
+		</p> -->
+		<!-- <div v-if="loading" class="flex items-center justify-center gap-2">
+			<UIcon name="ph:circle-notch" class="size-12 animate-spin" />
+			<p>Salles en cours de chargement</p>
+		</div>
+		<div v-if="error">
+			<p class="text-center text-gray-600 dark:text-gray-300">{{ error }}</p>
+		</div> -->
+		<div
+			class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
+		>
+			<NuxtLink
+				:to="`/room/${room.id}?date=${availabilityDate}&startTime=${availabilityStartTime}&endTime=${availabilityEndTime}`"
+				v-for="room in rooms"
+				:key="room.id"
 			>
-				<UIcon name="ph:circle-notch" class="size-12 animate-spin" />
-				<p>Salles en cours de chargement</p>
-			</div>
-			<div v-else-if="error">
-				<p class="text-center text-gray-600 dark:text-gray-300">{{ error }}</p>
-			</div>
-			<div
-				v-else-if="rooms"
-				class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:mx-auto xl:max-w-screen-xl"
-			>
-				<NuxtLink
-					:to="`/room/${room.id}?date=${availabilityDate}&startHour=${availabilityStartHour}&endHour=${availabilityEndHour}`"
-					v-for="room in rooms"
-					:key="room.id"
+				<div
+					class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
 				>
-					<div
-						class="overflow-hidden rounded-md bg-white shadow dark:bg-gray-900"
-					>
-						<img class="h-60 w-full object-cover" :src="room.img" alt="" />
-						<div class="flex items-baseline justify-between p-3">
-							<div>
-								<div class="text-xl font-medium">{{ room.name }}</div>
-								<div class="flex items-center gap-1.5">
-									<UIcon name="ph:stairs" class="size-5" />
-									<div class="text-gray-600 dark:text-gray-300">
-										Étage {{ room.floor }}, {{ room.building }}
-									</div>
+					<img class="h-60 w-full object-cover" :src="room.imageUrl" alt="" />
+					<div class="flex items-baseline justify-between p-3">
+						<div>
+							<div class="text-xl font-medium">{{ room.name }}</div>
+							<!-- <div class="flex items-center gap-1.5">
+								<UIcon name="ph:stairs" class="size-5" />
+								<div class="text-gray-600 dark:text-gray-300">
+									Étage {{ room.floor }}, {{ room.building }}
 								</div>
-							</div>
-							<div
-								class="flex items-center gap-1.5 text-gray-700 dark:text-gray-200"
-							>
-								{{ room.seats }}
-								<UIcon name="ph:users-three" class="size-5" />
-							</div>
+							</div> -->
+						</div>
+						<div
+							class="flex items-center gap-1.5 text-gray-700 dark:text-gray-200"
+						>
+							{{ room.minSeatingCapacity }}
+							<UIcon name="ph:users-three" class="size-5" />
 						</div>
 					</div>
-				</NuxtLink>
-			</div>
-			<div v-else-if="rooms.length === 0">Pas de salles trouvées.</div>
-		</template>
+				</div>
+			</NuxtLink>
+		</div>
 	</div>
 </template>
 
@@ -124,20 +125,34 @@ definePageMeta({
 	middleware: "auth",
 });
 
-const showRooms = ref(false);
+const rooms = ref([]);
 
 const availabilityDate = ref("");
-const availabilityStartHour = ref("");
-const availabilityEndHour = ref("");
-const seats = ref("");
-const accessible = ref(false);
+const availabilityStartTime = ref("");
+const availabilityEndTime = ref("");
+const minSeatingCapacity = ref("");
+const surface = ref(null);
+const accessiblePMR = ref(false);
 const projector = ref(false);
 const speaker = ref(false);
 
-const onSubmit = async () => {
+const fetchRooms = async () => {
 	// todo : add query to fetch rooms
-	const fetchRooms = await useFetch(`http://localhost:5184/api/Room`);
+	const response = await $fetch("http://localhost:5184/api/Room", {
+		params: {
+			availableDate: availabilityDate.value,
+			availableStartTime: availabilityStartTime.value,
+			availableEndTime: availabilityEndTime.value,
+			minSeatingCapacity: minSeatingCapacity.value || undefined,
+			accessiblePMR: accessiblePMR.value,
+			projector: projector.value,
+			speaker: speaker.value,
+		},
+		headers: {
+			Authorization: `Bearer ${useCookie("auth_token").value.token}`,
+		},
+	});
 
-	showRooms.value = true;
+	rooms.value = response;
 };
 </script>

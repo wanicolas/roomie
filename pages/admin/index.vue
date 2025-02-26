@@ -66,5 +66,9 @@ const {
 	data: rooms,
 	error,
 	status,
-} = await useFetch(`http://localhost:5184/api/Room`);
+} = await useFetch("http://localhost:5184/api/Room", {
+	headers: {
+		Authorization: `Bearer ${useCookie("auth_token").value.token}`,
+	},
+});
 </script>

@@ -15,7 +15,7 @@
 	<h2 class="m-3 mb-6 max-w-screen-xl text-2xl font-semibold xl:mx-auto">
 		Historique des réservations
 	</h2>
-	<div v-for="booking in userInfos.bookings">
+	<!-- <div v-for="booking in userInfos.bookings">
 		<p>
 			Salle :
 			<NuxtLink :to="`/room/${booking.roomId}`">
@@ -25,7 +25,7 @@
 		<p>Date : {{ booking.date }}</p>
 		<p>heure de début : {{ booking.startHour }}</p>
 		<p>heure de fin : {{ booking.endHour }}</p>
-	</div>
+	</div> -->
 </template>
 
 <script setup>
