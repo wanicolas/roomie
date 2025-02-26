@@ -134,5 +134,47 @@ namespace Roomie.Backend.Controllers
             var bytes = Encoding.UTF8.GetBytes("\uFEFF" + csvBuilder.ToString()); // Ajout du BOM UTF-8
             return File(bytes, "text/csv", "reservations.csv");
         }
+        [HttpGet("export-cal")]
+        public async Task<IActionResult> ExportReservationsAsICal()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return Unauthorized("Utilisateur non authentifié.");
+
+            var reservations = await _context.Reservations
+                .Where(r => r.UserId == userId)
+                .Include(r => r.Room)
+                .ToListAsync();
+
+            if (!reservations.Any())
+                return NotFound("Aucune réservation trouvée pour cet utilisateur.");
+
+            var sb = new StringBuilder();
+            sb.AppendLine("BEGIN:VCALENDAR");
+            sb.AppendLine("VERSION:2.0");
+            sb.AppendLine("PRODID:-//Roomie//Reservation Calendar//FR");
+
+            foreach (var reservation in reservations)
+            {
+                var startTime = reservation.StartTime.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
+                var endTime = reservation.EndTime.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
+                var roomName = reservation.Room?.Id.ToString() ?? "Salle inconnue"; // Remplace `Id` par `Name` si dispo
+
+                sb.AppendLine("BEGIN:VEVENT");
+                sb.AppendLine($"UID:{reservation.Id}@roomie.com");
+                sb.AppendLine($"DTSTAMP:{DateTime.UtcNow:yyyyMMddTHHmmssZ}");
+                sb.AppendLine($"DTSTART:{startTime}");
+                sb.AppendLine($"DTEND:{endTime}");
+                sb.AppendLine($"SUMMARY:Réservation - {roomName}");
+                sb.AppendLine("DESCRIPTION:Réservation de salle via Roomie");
+                sb.AppendLine("END:VEVENT");
+            }
+
+            sb.AppendLine("END:VCALENDAR");
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/calendar", "reservations.ics");
+        }
+
     }
 }
