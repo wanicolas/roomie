@@ -125,7 +125,7 @@ builder.Services.AddAuthentication(config => {
             {
                 context.HandleResponse();
               //  context.Response.StatusCode = 401;
-               // context.Response.ContentType = "text/plain";
+              // context.Response.ContentType = "text/plain";
                 return Task.CompletedTask;
             },
             // OnMessageReceived = context =>
