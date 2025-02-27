@@ -20,8 +20,8 @@
 			<h2 class="m-3 mb-6 text-2xl font-semibold">Export des réservations</h2>
 
 			<div class="flex gap-3">
-				<UButton :to="exportCSV" color="gray"> Export .csv </UButton>
-				<UButton :to="exportICS" color="gray"> Export .ics </UButton>
+				<UButton @click="downloadCSV" color="gray"> Export .csv </UButton>
+				<UButton @click="downloadICS" color="gray"> Export .ics </UButton>
 			</div>
 
 			<h2 class="m-3 mb-6 text-2xl font-semibold">
@@ -86,23 +86,57 @@ const {
 	},
 });
 
-const { data: exportCSV } = await useFetch(
-	"http://localhost:5184/api/Reservation/export-csv",
-	{
-		headers: {
-			Authorization: `Bearer ${useCookie("auth_token").value.token}`,
-		},
-	},
-);
+const downloadCSV = async () => {
+	try {
+		const response = await fetch(
+			"http://localhost:5184/api/Reservation/export-csv",
+			{
+				headers: {
+					Authorization: `Bearer ${useCookie("auth_token").value.token}`,
+				},
+			},
+		);
 
-const { data: exportICS } = await useFetch(
-	"http://localhost:5184/api/Reservation/export-cal",
-	{
-		headers: {
-			Authorization: `Bearer ${useCookie("auth_token").value.token}`,
-		},
-	},
-);
+		const blob = await response.blob();
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `reservations-${new Date().toISOString().split("T")[0]}.csv`;
+		document.body.appendChild(a);
+		a.click();
+		window.URL.revokeObjectURL(url);
+		a.remove();
+	} catch (error) {
+		console.error("Error downloading CSV:", error);
+		alert("Une erreur est survenue lors du téléchargement");
+	}
+};
+
+const downloadICS = async () => {
+	try {
+		const response = await fetch(
+			"http://localhost:5184/api/Reservation/export-cal",
+			{
+				headers: {
+					Authorization: `Bearer ${useCookie("auth_token").value.token}`,
+				},
+			},
+		);
+
+		const blob = await response.blob();
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `calendar-${new Date().toISOString().split("T")[0]}.ics`;
+		document.body.appendChild(a);
+		a.click();
+		window.URL.revokeObjectURL(url);
+		a.remove();
+	} catch (error) {
+		console.error("Error downloading ICS:", error);
+		alert("Une erreur est survenue lors du téléchargement");
+	}
+};
 
 const deleteBooking = async () => {
 	const response = await $fetch(
