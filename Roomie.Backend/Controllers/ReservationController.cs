@@ -158,7 +158,7 @@ namespace Roomie.Backend.Controllers
             {
                 var startTime = reservation.StartTime.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
                 var endTime = reservation.EndTime.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
-                var roomName = reservation.Room?.Id.ToString() ?? "Salle inconnue"; // Remplace `Id` par `Name` si dispo
+                var roomName = reservation.Room?.Id.ToString() ?? "Salle inconnue";
 
                 sb.AppendLine("BEGIN:VEVENT");
                 sb.AppendLine($"UID:{reservation.Id}@roomie.com");

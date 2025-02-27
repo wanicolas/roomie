@@ -8,7 +8,7 @@ namespace Roomie.Backend.Models
         public double Surface { get; set; }
         public bool AccessiblePMR { get; set; }
         public int MinSeatingCapacity { get; set; }
-        public string? ImageUrl { get; set; }  // Nouvelle propriété
+        public string? ImageUrl { get; set; }
         public bool HasProjector { get; set; }
         public bool HasSpeakers { get; set; }
 

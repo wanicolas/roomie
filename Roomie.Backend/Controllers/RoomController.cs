@@ -68,12 +68,11 @@ namespace Roomie.Backend.Controllers
             var startDateTime = date.Value.Date + startTime.Value.ToTimeSpan();
             var endDateTime = date.Value.Date + endTime.Value.ToTimeSpan();
 
-var unavailableRoomIds = await _context.Reservations
-    .Where(res => res.StartTime < endDateTime && res.EndTime > startDateTime)
-    .Select(res => res.RoomId)
-    .ToListAsync();
+            var unavailableRoomIds = await _context.Reservations
+                .Where(res => res.StartTime < endDateTime && res.EndTime > startDateTime)
+                .Select(res => res.RoomId)
+                .ToListAsync();
 
-                
                 query = query.Where(r => !unavailableRoomIds.Contains(r.Id));
             }
 
@@ -109,7 +108,7 @@ var unavailableRoomIds = await _context.Reservations
             if (room.MinSeatingCapacity > room.Capacity)
                 return BadRequest(new { message = "Le nombre de places assises minimum ne peut pas être supérieur à la capacité." });
 
-            room.Bookings = new List<Booking>(); // S'assurer que les réservations ne sont pas envoyées
+            room.Bookings = new List<Booking>(); 
 
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();

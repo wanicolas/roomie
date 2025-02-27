@@ -109,7 +109,6 @@ namespace Roomie.Backend.Controllers
                     signingCredentials: creds
                 );
 
-                // Utiliser Append au lieu de Add pour les headers CORS
                 Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:3000");
                 Response.Headers.Append("Access-Control-Allow-Credentials", "true");
 
