@@ -17,39 +17,38 @@
 				Déconnexion
 			</UButton>
 
-			<h2 class="m-3 mb-6 text-2xl font-semibold">Export des réservations</h2>
-
-			<div class="flex gap-3">
-				<UButton @click="downloadCSV" color="gray"> Export .csv </UButton>
-				<UButton @click="downloadICS" color="gray"> Export .ics </UButton>
-			</div>
-
-			<h2 class="m-3 mb-6 text-2xl font-semibold">
-				Historique des réservations
-			</h2>
-			<div
-				v-for="booking in userBookings"
-				class="mb-6 rounded-lg border px-3 py-2"
-			>
-				<div class="mb-3">
-					<p class="mb-2 text-lg">
-						Salle :
-						<NuxtLink
-							:to="`/room/${booking.roomId}`"
-							class="underline underline-offset-4 hover:no-underline"
-						>
-							{{ booking.room.name }}
-						</NuxtLink>
-					</p>
-					<p>Date : {{ booking.startTime }}</p>
-					<p>heure de début : {{ booking.startTime }}</p>
-					<p>heure de fin : {{ booking.endTime }}</p>
+			<template v-if="userBookings.length > 0">
+				<h2 class="m-3 mb-6 text-2xl font-semibold">Export des réservations</h2>
+				<div class="flex gap-3">
+					<UButton @click="downloadCSV" color="gray"> Export .csv </UButton>
+					<UButton @click="downloadICS" color="gray"> Export .ics </UButton>
 				</div>
-
-				<UButton @click="deleteBooking" color="red" variant="outline">
-					Supprimer la réservation
-				</UButton>
-			</div>
+				<h2 class="m-3 mb-6 text-2xl font-semibold">
+					Historique des réservations
+				</h2>
+				<div
+					v-for="booking in userBookings"
+					class="mb-6 rounded-lg border px-3 py-2"
+				>
+					<div class="mb-3">
+						<p class="mb-2 text-lg">
+							Salle :
+							<NuxtLink
+								:to="`/room/${booking.roomId}`"
+								class="underline underline-offset-4 hover:no-underline"
+							>
+								{{ booking.room.name }}
+							</NuxtLink>
+						</p>
+						<p>Date : {{ booking.startTime }}</p>
+						<p>heure de début : {{ booking.startTime }}</p>
+						<p>heure de fin : {{ booking.endTime }}</p>
+					</div>
+					<UButton @click="deleteBooking" color="red" variant="outline">
+						Supprimer la réservation
+					</UButton>
+				</div>
+			</template>
 		</div>
 	</div>
 </template>
