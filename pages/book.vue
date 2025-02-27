@@ -128,9 +128,10 @@ const hasSpeaker = ref(false);
 const fetchRooms = async () => {
 	const response = await $fetch("http://localhost:5184/api/Room", {
 		params: {
-			availableDate: availabilityDate.value,
-			availableStartTime: availabilityStartTime.value,
-			availableEndTime: availabilityEndTime.value,
+			date: availabilityDate.value,
+			startTime: availabilityStartTime.value,
+			endTime: availabilityEndTime.value,
+			surface: surface.value || undefined,
 			minSeatingCapacity: minSeatingCapacity.value || undefined,
 			accessiblePMR: accessiblePMR.value ? true : undefined,
 			hasProjector: hasProjector.value ? true : undefined,
